@@ -1,0 +1,2719 @@
+{
+  "applyable": true,
+  "complete": true,
+  "configuration": {
+    "provider_config": {
+      "aws": {
+        "expressions": {
+          "access_key": {
+            "constant_value": "synthetic"
+          },
+          "region": {
+            "constant_value": "eu-west-1"
+          },
+          "secret_key": {
+            "constant_value": "synthetic"
+          },
+          "skip_credentials_validation": {
+            "constant_value": true
+          },
+          "skip_metadata_api_check": {
+            "constant_value": true
+          },
+          "skip_region_validation": {
+            "constant_value": true
+          },
+          "skip_requesting_account_id": {
+            "constant_value": true
+          }
+        },
+        "full_name": "registry.terraform.io/hashicorp/aws",
+        "name": "aws",
+        "version_constraint": "6.15.0"
+      }
+    },
+    "root_module": {
+      "module_calls": {
+        "ledger_db": {
+          "expressions": {
+            "encrypted": {
+              "constant_value": true
+            },
+            "name": {
+              "constant_value": "ledger"
+            }
+          },
+          "module": {
+            "resources": [
+              {
+                "address": "aws_db_instance.this",
+                "expressions": {
+                  "allocated_storage": {
+                    "constant_value": 50
+                  },
+                  "deletion_protection": {
+                    "constant_value": false
+                  },
+                  "engine": {
+                    "constant_value": "postgres"
+                  },
+                  "engine_version": {
+                    "constant_value": "16.4"
+                  },
+                  "identifier": {
+                    "references": [
+                      "var.name"
+                    ]
+                  },
+                  "instance_class": {
+                    "constant_value": "db.t4g.medium"
+                  },
+                  "manage_master_user_password": {
+                    "constant_value": true
+                  },
+                  "skip_final_snapshot": {
+                    "constant_value": true
+                  },
+                  "storage_encrypted": {
+                    "references": [
+                      "var.encrypted"
+                    ]
+                  },
+                  "username": {
+                    "constant_value": "ledger_admin"
+                  }
+                },
+                "mode": "managed",
+                "name": "this",
+                "provider_config_key": "aws",
+                "schema_version": 2,
+                "type": "aws_db_instance"
+              }
+            ],
+            "variables": {
+              "encrypted": {},
+              "name": {}
+            }
+          },
+          "source": "./modules/postgres"
+        }
+      },
+      "resources": [
+        {
+          "address": "aws_cloudwatch_log_group.service",
+          "expressions": {
+            "name": {
+              "references": [
+                "each.key"
+              ]
+            },
+            "retention_in_days": {
+              "constant_value": 30
+            },
+            "tags": {
+              "constant_value": {
+                "cost_center": "cc-4410",
+                "team": "payments"
+              }
+            }
+          },
+          "mode": "managed",
+          "name": "service",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_cloudwatch_log_group"
+        },
+        {
+          "address": "aws_iam_role.ci_deployer",
+          "expressions": {
+            "assume_role_policy": {},
+            "name": {
+              "constant_value": "ci-deployer"
+            }
+          },
+          "mode": "managed",
+          "name": "ci_deployer",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_iam_role"
+        },
+        {
+          "address": "aws_iam_role_policy.ci_deployer",
+          "expressions": {
+            "name": {
+              "constant_value": "deploy-statements"
+            },
+            "policy": {},
+            "role": {
+              "references": [
+                "aws_iam_role.ci_deployer.id",
+                "aws_iam_role.ci_deployer"
+              ]
+            }
+          },
+          "mode": "managed",
+          "name": "ci_deployer",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_iam_role_policy"
+        },
+        {
+          "address": "aws_iam_role_policy_attachment.ci_admin",
+          "expressions": {
+            "policy_arn": {
+              "constant_value": "arn:aws:iam::aws:policy/AdministratorAccess"
+            },
+            "role": {
+              "references": [
+                "aws_iam_role.ci_deployer.name",
+                "aws_iam_role.ci_deployer"
+              ]
+            }
+          },
+          "mode": "managed",
+          "name": "ci_admin",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_iam_role_policy_attachment"
+        },
+        {
+          "address": "aws_s3_bucket.statements",
+          "expressions": {
+            "bucket": {
+              "constant_value": "acme-statements-prod-eu"
+            }
+          },
+          "mode": "managed",
+          "name": "statements",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_s3_bucket"
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.statements",
+          "expressions": {
+            "block_public_acls": {
+              "constant_value": true
+            },
+            "block_public_policy": {
+              "constant_value": false
+            },
+            "bucket": {
+              "references": [
+                "aws_s3_bucket.statements.id",
+                "aws_s3_bucket.statements"
+              ]
+            },
+            "ignore_public_acls": {
+              "constant_value": true
+            },
+            "restrict_public_buckets": {
+              "constant_value": false
+            }
+          },
+          "mode": "managed",
+          "name": "statements",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_s3_bucket_public_access_block"
+        },
+        {
+          "address": "aws_security_group.api",
+          "expressions": {
+            "name": {
+              "constant_value": "api"
+            },
+            "vpc_id": {
+              "constant_value": "vpc-0a1b2c3d4e5f60789"
+            }
+          },
+          "mode": "managed",
+          "name": "api",
+          "provider_config_key": "aws",
+          "schema_version": 1,
+          "type": "aws_security_group"
+        },
+        {
+          "address": "aws_sqs_queue.refund_events",
+          "expressions": {
+            "message_retention_seconds": {
+              "constant_value": 345600
+            },
+            "name": {
+              "constant_value": "refund-events"
+            }
+          },
+          "mode": "managed",
+          "name": "refund_events",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_sqs_queue"
+        },
+        {
+          "address": "aws_vpc_security_group_ingress_rule.https_internal",
+          "expressions": {
+            "cidr_ipv4": {
+              "constant_value": "10.0.0.0/8"
+            },
+            "from_port": {
+              "constant_value": 443
+            },
+            "ip_protocol": {
+              "constant_value": "tcp"
+            },
+            "security_group_id": {
+              "references": [
+                "aws_security_group.api.id",
+                "aws_security_group.api"
+              ]
+            },
+            "to_port": {
+              "constant_value": 443
+            }
+          },
+          "mode": "managed",
+          "name": "https_internal",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_vpc_security_group_ingress_rule"
+        },
+        {
+          "address": "aws_vpc_security_group_ingress_rule.https_public",
+          "expressions": {
+            "cidr_ipv4": {
+              "constant_value": "0.0.0.0/0"
+            },
+            "from_port": {
+              "constant_value": 443
+            },
+            "ip_protocol": {
+              "constant_value": "tcp"
+            },
+            "security_group_id": {
+              "references": [
+                "aws_security_group.api.id",
+                "aws_security_group.api"
+              ]
+            },
+            "to_port": {
+              "constant_value": 443
+            }
+          },
+          "mode": "managed",
+          "name": "https_public",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_vpc_security_group_ingress_rule"
+        },
+        {
+          "address": "aws_vpc_security_group_ingress_rule.ssh_debug",
+          "expressions": {
+            "cidr_ipv4": {
+              "constant_value": "0.0.0.0/0"
+            },
+            "from_port": {
+              "constant_value": 22
+            },
+            "ip_protocol": {
+              "constant_value": "tcp"
+            },
+            "security_group_id": {
+              "references": [
+                "aws_security_group.api.id",
+                "aws_security_group.api"
+              ]
+            },
+            "to_port": {
+              "constant_value": 22
+            }
+          },
+          "mode": "managed",
+          "name": "ssh_debug",
+          "provider_config_key": "aws",
+          "schema_version": 0,
+          "type": "aws_vpc_security_group_ingress_rule"
+        }
+      ]
+    }
+  },
+  "errored": false,
+  "format_version": "1.2",
+  "planned_values": {
+    "root_module": {
+      "child_modules": [
+        {
+          "address": "module.ledger_db",
+          "resources": [
+            {
+              "address": "module.ledger_db.aws_db_instance.this",
+              "mode": "managed",
+              "name": "this",
+              "provider_name": "registry.terraform.io/hashicorp/aws",
+              "schema_version": 2,
+              "sensitive_values": {
+                "blue_green_update": [],
+                "listener_endpoint": [],
+                "master_user_secret": [],
+                "replicas": [],
+                "restore_to_point_in_time": [],
+                "s3_import": [],
+                "tags_all": {},
+                "vpc_security_group_ids": []
+              },
+              "type": "aws_db_instance",
+              "values": {
+                "allocated_storage": 50,
+                "allow_major_version_upgrade": null,
+                "apply_immediately": false,
+                "auto_minor_version_upgrade": true,
+                "blue_green_update": [],
+                "copy_tags_to_snapshot": false,
+                "custom_iam_instance_profile": null,
+                "customer_owned_ip_enabled": null,
+                "dedicated_log_volume": false,
+                "delete_automated_backups": true,
+                "deletion_protection": false,
+                "domain": null,
+                "domain_auth_secret_arn": null,
+                "domain_dns_ips": null,
+                "domain_iam_role_name": null,
+                "domain_ou": null,
+                "enabled_cloudwatch_logs_exports": null,
+                "engine": "postgres",
+                "engine_version": "16.4",
+                "final_snapshot_identifier": null,
+                "iam_database_authentication_enabled": null,
+                "identifier": "ledger-pg",
+                "instance_class": "db.t4g.medium",
+                "manage_master_user_password": true,
+                "max_allocated_storage": null,
+                "monitoring_interval": 0,
+                "password": null,
+                "password_wo": null,
+                "password_wo_version": null,
+                "performance_insights_enabled": false,
+                "publicly_accessible": false,
+                "region": "eu-west-1",
+                "replicate_source_db": null,
+                "restore_to_point_in_time": [],
+                "s3_import": [],
+                "skip_final_snapshot": true,
+                "storage_encrypted": true,
+                "tags": null,
+                "timeouts": null,
+                "upgrade_storage_config": null,
+                "username": "ledger_admin"
+              }
+            }
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "address": "aws_cloudwatch_log_group.service[\"api\"]",
+          "identity": {
+            "account_id": null,
+            "name": null,
+            "region": null
+          },
+          "identity_schema_version": 0,
+          "index": "api",
+          "mode": "managed",
+          "name": "service",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags": {},
+            "tags_all": {}
+          },
+          "type": "aws_cloudwatch_log_group",
+          "values": {
+            "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-api",
+            "id": "synthetic-aws-cloudwatch-log-group-service-api",
+            "kms_key_id": null,
+            "log_group_class": "synthetic-aws-cloudwatch-log-group-service-api",
+            "name": "/acme/api",
+            "name_prefix": "synthetic-aws-cloudwatch-log-group-service-api",
+            "region": "eu-west-1",
+            "retention_in_days": 30,
+            "skip_destroy": false,
+            "tags": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            },
+            "tags_all": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            }
+          }
+        },
+        {
+          "address": "aws_cloudwatch_log_group.service[\"ledger\"]",
+          "identity": {
+            "account_id": null,
+            "name": null,
+            "region": null
+          },
+          "identity_schema_version": 0,
+          "index": "ledger",
+          "mode": "managed",
+          "name": "service",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags": {},
+            "tags_all": {}
+          },
+          "type": "aws_cloudwatch_log_group",
+          "values": {
+            "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-ledger",
+            "id": "synthetic-aws-cloudwatch-log-group-service-ledger",
+            "kms_key_id": null,
+            "log_group_class": "synthetic-aws-cloudwatch-log-group-service-ledger",
+            "name": "/acme/ledger",
+            "name_prefix": "synthetic-aws-cloudwatch-log-group-service-ledger",
+            "region": "eu-west-1",
+            "retention_in_days": 30,
+            "skip_destroy": false,
+            "tags": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            },
+            "tags_all": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            }
+          }
+        },
+        {
+          "address": "aws_cloudwatch_log_group.service[\"payouts\"]",
+          "identity": {
+            "account_id": null,
+            "name": null,
+            "region": null
+          },
+          "identity_schema_version": 0,
+          "index": "payouts",
+          "mode": "managed",
+          "name": "service",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags": {},
+            "tags_all": {}
+          },
+          "type": "aws_cloudwatch_log_group",
+          "values": {
+            "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-payouts",
+            "id": "synthetic-aws-cloudwatch-log-group-service-payouts",
+            "kms_key_id": null,
+            "log_group_class": "synthetic-aws-cloudwatch-log-group-service-payouts",
+            "name": "/acme/payouts",
+            "name_prefix": "synthetic-aws-cloudwatch-log-group-service-payouts",
+            "region": "eu-west-1",
+            "retention_in_days": 30,
+            "skip_destroy": false,
+            "tags": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            },
+            "tags_all": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            }
+          }
+        },
+        {
+          "address": "aws_cloudwatch_log_group.service[\"refunds\"]",
+          "identity": {
+            "account_id": null,
+            "name": null,
+            "region": null
+          },
+          "identity_schema_version": 0,
+          "index": "refunds",
+          "mode": "managed",
+          "name": "service",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags": {},
+            "tags_all": {}
+          },
+          "type": "aws_cloudwatch_log_group",
+          "values": {
+            "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-refunds",
+            "id": "synthetic-aws-cloudwatch-log-group-service-refunds",
+            "kms_key_id": null,
+            "log_group_class": "synthetic-aws-cloudwatch-log-group-service-refunds",
+            "name": "/acme/refunds",
+            "name_prefix": "synthetic-aws-cloudwatch-log-group-service-refunds",
+            "region": "eu-west-1",
+            "retention_in_days": 30,
+            "skip_destroy": false,
+            "tags": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            },
+            "tags_all": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            }
+          }
+        },
+        {
+          "address": "aws_cloudwatch_log_group.service[\"webhooks\"]",
+          "identity": {
+            "account_id": null,
+            "name": null,
+            "region": null
+          },
+          "identity_schema_version": 0,
+          "index": "webhooks",
+          "mode": "managed",
+          "name": "service",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags": {},
+            "tags_all": {}
+          },
+          "type": "aws_cloudwatch_log_group",
+          "values": {
+            "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-webhooks",
+            "id": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+            "kms_key_id": null,
+            "log_group_class": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+            "name": "/acme/webhooks",
+            "name_prefix": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+            "region": "eu-west-1",
+            "retention_in_days": 30,
+            "skip_destroy": false,
+            "tags": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            },
+            "tags_all": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            }
+          }
+        },
+        {
+          "address": "aws_cloudwatch_log_group.service[\"worker\"]",
+          "identity": {
+            "account_id": null,
+            "name": null,
+            "region": null
+          },
+          "identity_schema_version": 0,
+          "index": "worker",
+          "mode": "managed",
+          "name": "service",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags": {},
+            "tags_all": {}
+          },
+          "type": "aws_cloudwatch_log_group",
+          "values": {
+            "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-worker",
+            "id": "synthetic-aws-cloudwatch-log-group-service-worker",
+            "kms_key_id": null,
+            "log_group_class": "synthetic-aws-cloudwatch-log-group-service-worker",
+            "name": "/acme/worker",
+            "name_prefix": "synthetic-aws-cloudwatch-log-group-service-worker",
+            "region": "eu-west-1",
+            "retention_in_days": 30,
+            "skip_destroy": false,
+            "tags": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            },
+            "tags_all": {
+              "cost_center": "cc-4410",
+              "team": "payments"
+            }
+          }
+        },
+        {
+          "address": "aws_iam_role.ci_deployer",
+          "mode": "managed",
+          "name": "ci_deployer",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "inline_policy": [],
+            "managed_policy_arns": [],
+            "tags_all": {}
+          },
+          "type": "aws_iam_role",
+          "values": {
+            "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-iam-role-ci-deployer",
+            "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com\"}}],\"Version\":\"2012-10-17\"}",
+            "create_date": "synthetic-aws-iam-role-ci-deployer",
+            "description": null,
+            "force_detach_policies": false,
+            "id": "synthetic-aws-iam-role-ci-deployer",
+            "inline_policy": [],
+            "managed_policy_arns": [],
+            "max_session_duration": 3600,
+            "name": "ci-deployer",
+            "name_prefix": "synthetic-aws-iam-role-ci-deployer",
+            "path": "/",
+            "permissions_boundary": null,
+            "tags": null,
+            "tags_all": {},
+            "unique_id": "synthetic-aws-iam-role-ci-deployer"
+          }
+        },
+        {
+          "address": "aws_iam_role_policy.ci_deployer",
+          "identity": {
+            "account_id": null,
+            "name": null,
+            "role": null
+          },
+          "identity_schema_version": 0,
+          "mode": "managed",
+          "name": "ci_deployer",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {},
+          "type": "aws_iam_role_policy",
+          "values": {
+            "id": "synthetic-aws-iam-role-policy-ci-deployer",
+            "name": "deploy-statements",
+            "name_prefix": "synthetic-aws-iam-role-policy-ci-deployer",
+            "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:*\",\"iam:PassRole\"],\"Effect\":\"Allow\",\"Resource\":\"*\"}]}",
+            "role": "synthetic-aws-iam-role-ci-deployer"
+          }
+        },
+        {
+          "address": "aws_iam_role_policy_attachment.ci_admin",
+          "identity": {
+            "account_id": null,
+            "policy_arn": null,
+            "role": null
+          },
+          "identity_schema_version": 0,
+          "mode": "managed",
+          "name": "ci_admin",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {},
+          "type": "aws_iam_role_policy_attachment",
+          "values": {
+            "policy_arn": "arn:aws:iam::aws:policy/AdministratorAccess",
+            "role": "ci-deployer"
+          }
+        },
+        {
+          "address": "aws_s3_bucket.statements",
+          "identity": {
+            "account_id": null,
+            "bucket": null,
+            "region": null
+          },
+          "identity_schema_version": 0,
+          "mode": "managed",
+          "name": "statements",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "cors_rule": [],
+            "grant": [],
+            "lifecycle_rule": [],
+            "logging": [],
+            "object_lock_configuration": [],
+            "replication_configuration": [],
+            "server_side_encryption_configuration": [],
+            "tags_all": {},
+            "versioning": [],
+            "website": []
+          },
+          "type": "aws_s3_bucket",
+          "values": {
+            "bucket": "acme-statements-prod-eu",
+            "force_destroy": false,
+            "region": "eu-west-1",
+            "tags": null,
+            "timeouts": null
+          }
+        },
+        {
+          "address": "aws_s3_bucket_public_access_block.statements",
+          "identity": {
+            "account_id": null,
+            "bucket": null,
+            "region": null
+          },
+          "identity_schema_version": 0,
+          "mode": "managed",
+          "name": "statements",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {},
+          "type": "aws_s3_bucket_public_access_block",
+          "values": {
+            "block_public_acls": true,
+            "block_public_policy": false,
+            "ignore_public_acls": true,
+            "region": "eu-west-1",
+            "restrict_public_buckets": false,
+            "skip_destroy": null
+          }
+        },
+        {
+          "address": "aws_security_group.api",
+          "mode": "managed",
+          "name": "api",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 1,
+          "sensitive_values": {
+            "egress": [],
+            "ingress": [],
+            "tags_all": {}
+          },
+          "type": "aws_security_group",
+          "values": {
+            "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-security-group-api",
+            "description": "Managed by Terraform",
+            "egress": [],
+            "id": "synthetic-aws-security-group-api",
+            "ingress": [],
+            "name": "api",
+            "name_prefix": "synthetic-aws-security-group-api",
+            "owner_id": "synthetic-aws-security-group-api",
+            "region": "eu-west-1",
+            "revoke_rules_on_delete": false,
+            "tags": null,
+            "tags_all": {},
+            "timeouts": null,
+            "vpc_id": "vpc-0a1b2c3d4e5f60789"
+          }
+        },
+        {
+          "address": "aws_sqs_queue.refund_events",
+          "identity": {
+            "account_id": null,
+            "region": null,
+            "url": null
+          },
+          "identity_schema_version": 0,
+          "mode": "managed",
+          "name": "refund_events",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags_all": {}
+          },
+          "type": "aws_sqs_queue",
+          "values": {
+            "content_based_deduplication": false,
+            "delay_seconds": 0,
+            "fifo_queue": false,
+            "kms_master_key_id": null,
+            "max_message_size": 262144,
+            "message_retention_seconds": 345600,
+            "name": "refund-events",
+            "receive_wait_time_seconds": 0,
+            "region": "eu-west-1",
+            "tags": null,
+            "timeouts": null,
+            "visibility_timeout_seconds": 30
+          }
+        },
+        {
+          "address": "aws_vpc_security_group_ingress_rule.https_internal",
+          "mode": "managed",
+          "name": "https_internal",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags_all": {}
+          },
+          "type": "aws_vpc_security_group_ingress_rule",
+          "values": {
+            "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-vpc-security-group-ingress-rule-https-internal",
+            "cidr_ipv4": "10.0.0.0/8",
+            "cidr_ipv6": null,
+            "description": null,
+            "from_port": 443,
+            "id": "synthetic-aws-vpc-security-group-ingress-rule-https-internal",
+            "ip_protocol": "tcp",
+            "prefix_list_id": null,
+            "referenced_security_group_id": null,
+            "region": "eu-west-1",
+            "security_group_id": "synthetic-aws-security-group-api",
+            "security_group_rule_id": "synthetic-aws-vpc-security-group-ingress-rule-https-internal",
+            "tags": null,
+            "tags_all": {},
+            "to_port": 443
+          }
+        },
+        {
+          "address": "aws_vpc_security_group_ingress_rule.https_public",
+          "mode": "managed",
+          "name": "https_public",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags_all": {}
+          },
+          "type": "aws_vpc_security_group_ingress_rule",
+          "values": {
+            "cidr_ipv4": "0.0.0.0/0",
+            "cidr_ipv6": null,
+            "description": null,
+            "from_port": 443,
+            "ip_protocol": "tcp",
+            "prefix_list_id": null,
+            "referenced_security_group_id": null,
+            "region": "eu-west-1",
+            "security_group_id": "synthetic-aws-security-group-api",
+            "tags": null,
+            "tags_all": {},
+            "to_port": 443
+          }
+        },
+        {
+          "address": "aws_vpc_security_group_ingress_rule.ssh_debug",
+          "mode": "managed",
+          "name": "ssh_debug",
+          "provider_name": "registry.terraform.io/hashicorp/aws",
+          "schema_version": 0,
+          "sensitive_values": {
+            "tags_all": {}
+          },
+          "type": "aws_vpc_security_group_ingress_rule",
+          "values": {
+            "cidr_ipv4": "0.0.0.0/0",
+            "cidr_ipv6": null,
+            "description": null,
+            "from_port": 22,
+            "ip_protocol": "tcp",
+            "prefix_list_id": null,
+            "referenced_security_group_id": null,
+            "region": "eu-west-1",
+            "security_group_id": "synthetic-aws-security-group-api",
+            "tags": null,
+            "tags_all": {},
+            "to_port": 22
+          }
+        }
+      ]
+    }
+  },
+  "prior_state": {
+    "format_version": "1.0",
+    "terraform_version": "1.16.5",
+    "values": {
+      "root_module": {
+        "child_modules": [
+          {
+            "address": "module.ledger_db",
+            "resources": [
+              {
+                "address": "module.ledger_db.aws_db_instance.this",
+                "mode": "managed",
+                "name": "this",
+                "provider_name": "registry.terraform.io/hashicorp/aws",
+                "schema_version": 2,
+                "sensitive_values": {
+                  "blue_green_update": [],
+                  "listener_endpoint": [],
+                  "master_user_secret": [],
+                  "password": true,
+                  "password_wo": true,
+                  "replicas": [],
+                  "restore_to_point_in_time": [],
+                  "s3_import": [],
+                  "tags_all": {},
+                  "vpc_security_group_ids": []
+                },
+                "type": "aws_db_instance",
+                "values": {
+                  "address": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "allocated_storage": 50,
+                  "allow_major_version_upgrade": null,
+                  "apply_immediately": false,
+                  "arn": "arn:aws:synthetic:eu-west-1:111122223333:module-ledger-db-aws-db-instance-this",
+                  "auto_minor_version_upgrade": true,
+                  "availability_zone": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "backup_retention_period": 0,
+                  "backup_target": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "backup_window": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "blue_green_update": [],
+                  "ca_cert_identifier": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "character_set_name": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "copy_tags_to_snapshot": false,
+                  "custom_iam_instance_profile": null,
+                  "customer_owned_ip_enabled": null,
+                  "database_insights_mode": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "db_name": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "db_subnet_group_name": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "dedicated_log_volume": false,
+                  "delete_automated_backups": true,
+                  "deletion_protection": false,
+                  "domain": null,
+                  "domain_auth_secret_arn": null,
+                  "domain_dns_ips": null,
+                  "domain_fqdn": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "domain_iam_role_name": null,
+                  "domain_ou": null,
+                  "enabled_cloudwatch_logs_exports": null,
+                  "endpoint": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "engine": "postgres",
+                  "engine_lifecycle_support": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "engine_version": "16.4",
+                  "engine_version_actual": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "final_snapshot_identifier": null,
+                  "hosted_zone_id": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "iam_database_authentication_enabled": null,
+                  "id": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "identifier": "ledger-pg",
+                  "identifier_prefix": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "instance_class": "db.t4g.medium",
+                  "iops": 0,
+                  "kms_key_id": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "latest_restorable_time": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "license_model": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "listener_endpoint": [],
+                  "maintenance_window": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "manage_master_user_password": true,
+                  "master_user_secret": [],
+                  "master_user_secret_kms_key_id": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "max_allocated_storage": null,
+                  "monitoring_interval": 0,
+                  "monitoring_role_arn": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "multi_az": false,
+                  "nchar_character_set_name": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "network_type": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "option_group_name": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "parameter_group_name": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "password": null,
+                  "password_wo": null,
+                  "password_wo_version": null,
+                  "performance_insights_enabled": false,
+                  "performance_insights_kms_key_id": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "performance_insights_retention_period": 0,
+                  "port": 0,
+                  "publicly_accessible": false,
+                  "region": "eu-west-1",
+                  "replica_mode": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "replicas": [],
+                  "replicate_source_db": null,
+                  "resource_id": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "restore_to_point_in_time": [],
+                  "s3_import": [],
+                  "skip_final_snapshot": true,
+                  "snapshot_identifier": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "status": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "storage_encrypted": false,
+                  "storage_throughput": 0,
+                  "storage_type": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "tags": null,
+                  "tags_all": {},
+                  "timeouts": null,
+                  "timezone": "synthetic-module-ledger-db-aws-db-instance-this",
+                  "upgrade_storage_config": null,
+                  "username": "ledger_admin",
+                  "vpc_security_group_ids": []
+                }
+              },
+              {
+                "address": "module.ledger_db.aws_kms_key.legacy",
+                "mode": "managed",
+                "name": "legacy",
+                "provider_name": "registry.terraform.io/hashicorp/aws",
+                "schema_version": 0,
+                "sensitive_values": {
+                  "tags_all": {}
+                },
+                "type": "aws_kms_key",
+                "values": {
+                  "arn": "arn:aws:synthetic:eu-west-1:111122223333:module-ledger-db-aws-kms-key-legacy",
+                  "bypass_policy_lockout_safety_check": false,
+                  "custom_key_store_id": null,
+                  "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+                  "deletion_window_in_days": 30,
+                  "description": "ledger legacy key",
+                  "enable_key_rotation": false,
+                  "id": "synthetic-module-ledger-db-aws-kms-key-legacy",
+                  "is_enabled": true,
+                  "key_id": "synthetic-module-ledger-db-aws-kms-key-legacy",
+                  "key_usage": "ENCRYPT_DECRYPT",
+                  "multi_region": false,
+                  "policy": "synthetic-module-ledger-db-aws-kms-key-legacy",
+                  "region": "eu-west-1",
+                  "rotation_period_in_days": 0,
+                  "tags": null,
+                  "tags_all": {},
+                  "timeouts": null,
+                  "xks_key_id": null
+                }
+              }
+            ]
+          }
+        ],
+        "resources": [
+          {
+            "address": "aws_cloudwatch_log_group.service[\"api\"]",
+            "index": "api",
+            "mode": "managed",
+            "name": "service",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "tags": {},
+              "tags_all": {}
+            },
+            "type": "aws_cloudwatch_log_group",
+            "values": {
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-api",
+              "id": "synthetic-aws-cloudwatch-log-group-service-api",
+              "kms_key_id": null,
+              "log_group_class": "synthetic-aws-cloudwatch-log-group-service-api",
+              "name": "/acme/api",
+              "name_prefix": "synthetic-aws-cloudwatch-log-group-service-api",
+              "region": "eu-west-1",
+              "retention_in_days": 30,
+              "skip_destroy": false,
+              "tags": {
+                "team": "payments"
+              },
+              "tags_all": {
+                "team": "payments"
+              }
+            }
+          },
+          {
+            "address": "aws_cloudwatch_log_group.service[\"ledger\"]",
+            "index": "ledger",
+            "mode": "managed",
+            "name": "service",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "tags": {},
+              "tags_all": {}
+            },
+            "type": "aws_cloudwatch_log_group",
+            "values": {
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-ledger",
+              "id": "synthetic-aws-cloudwatch-log-group-service-ledger",
+              "kms_key_id": null,
+              "log_group_class": "synthetic-aws-cloudwatch-log-group-service-ledger",
+              "name": "/acme/ledger",
+              "name_prefix": "synthetic-aws-cloudwatch-log-group-service-ledger",
+              "region": "eu-west-1",
+              "retention_in_days": 30,
+              "skip_destroy": false,
+              "tags": {
+                "team": "payments"
+              },
+              "tags_all": {
+                "team": "payments"
+              }
+            }
+          },
+          {
+            "address": "aws_cloudwatch_log_group.service[\"payouts\"]",
+            "index": "payouts",
+            "mode": "managed",
+            "name": "service",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "tags": {},
+              "tags_all": {}
+            },
+            "type": "aws_cloudwatch_log_group",
+            "values": {
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-payouts",
+              "id": "synthetic-aws-cloudwatch-log-group-service-payouts",
+              "kms_key_id": null,
+              "log_group_class": "synthetic-aws-cloudwatch-log-group-service-payouts",
+              "name": "/acme/payouts",
+              "name_prefix": "synthetic-aws-cloudwatch-log-group-service-payouts",
+              "region": "eu-west-1",
+              "retention_in_days": 30,
+              "skip_destroy": false,
+              "tags": {
+                "team": "payments"
+              },
+              "tags_all": {
+                "team": "payments"
+              }
+            }
+          },
+          {
+            "address": "aws_cloudwatch_log_group.service[\"refunds\"]",
+            "index": "refunds",
+            "mode": "managed",
+            "name": "service",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "tags": {},
+              "tags_all": {}
+            },
+            "type": "aws_cloudwatch_log_group",
+            "values": {
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-refunds",
+              "id": "synthetic-aws-cloudwatch-log-group-service-refunds",
+              "kms_key_id": null,
+              "log_group_class": "synthetic-aws-cloudwatch-log-group-service-refunds",
+              "name": "/acme/refunds",
+              "name_prefix": "synthetic-aws-cloudwatch-log-group-service-refunds",
+              "region": "eu-west-1",
+              "retention_in_days": 30,
+              "skip_destroy": false,
+              "tags": {
+                "team": "payments"
+              },
+              "tags_all": {
+                "team": "payments"
+              }
+            }
+          },
+          {
+            "address": "aws_cloudwatch_log_group.service[\"webhooks\"]",
+            "index": "webhooks",
+            "mode": "managed",
+            "name": "service",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "tags": {},
+              "tags_all": {}
+            },
+            "type": "aws_cloudwatch_log_group",
+            "values": {
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-webhooks",
+              "id": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+              "kms_key_id": null,
+              "log_group_class": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+              "name": "/acme/webhooks",
+              "name_prefix": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+              "region": "eu-west-1",
+              "retention_in_days": 30,
+              "skip_destroy": false,
+              "tags": {
+                "team": "payments"
+              },
+              "tags_all": {
+                "team": "payments"
+              }
+            }
+          },
+          {
+            "address": "aws_cloudwatch_log_group.service[\"worker\"]",
+            "index": "worker",
+            "mode": "managed",
+            "name": "service",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "tags": {},
+              "tags_all": {}
+            },
+            "type": "aws_cloudwatch_log_group",
+            "values": {
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-worker",
+              "id": "synthetic-aws-cloudwatch-log-group-service-worker",
+              "kms_key_id": null,
+              "log_group_class": "synthetic-aws-cloudwatch-log-group-service-worker",
+              "name": "/acme/worker",
+              "name_prefix": "synthetic-aws-cloudwatch-log-group-service-worker",
+              "region": "eu-west-1",
+              "retention_in_days": 30,
+              "skip_destroy": false,
+              "tags": {
+                "team": "payments"
+              },
+              "tags_all": {
+                "team": "payments"
+              }
+            }
+          },
+          {
+            "address": "aws_iam_role.ci_deployer",
+            "mode": "managed",
+            "name": "ci_deployer",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "inline_policy": [],
+              "managed_policy_arns": [],
+              "tags_all": {}
+            },
+            "type": "aws_iam_role",
+            "values": {
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-iam-role-ci-deployer",
+              "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com\"}}],\"Version\":\"2012-10-17\"}",
+              "create_date": "synthetic-aws-iam-role-ci-deployer",
+              "description": null,
+              "force_detach_policies": false,
+              "id": "synthetic-aws-iam-role-ci-deployer",
+              "inline_policy": [],
+              "managed_policy_arns": [],
+              "max_session_duration": 3600,
+              "name": "ci-deployer",
+              "name_prefix": "synthetic-aws-iam-role-ci-deployer",
+              "path": "/",
+              "permissions_boundary": null,
+              "tags": null,
+              "tags_all": {},
+              "unique_id": "synthetic-aws-iam-role-ci-deployer"
+            }
+          },
+          {
+            "address": "aws_iam_role_policy.ci_deployer",
+            "mode": "managed",
+            "name": "ci_deployer",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {},
+            "type": "aws_iam_role_policy",
+            "values": {
+              "id": "synthetic-aws-iam-role-policy-ci-deployer",
+              "name": "deploy-statements",
+              "name_prefix": "synthetic-aws-iam-role-policy-ci-deployer",
+              "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:GetObject\",\"s3:PutObject\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::acme-statements-prod/*\"}]}",
+              "role": "synthetic-aws-iam-role-ci-deployer"
+            }
+          },
+          {
+            "address": "aws_s3_bucket.scratch",
+            "mode": "managed",
+            "name": "scratch",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "cors_rule": [],
+              "grant": [],
+              "lifecycle_rule": [],
+              "logging": [],
+              "object_lock_configuration": [],
+              "replication_configuration": [],
+              "server_side_encryption_configuration": [],
+              "tags_all": {},
+              "versioning": [],
+              "website": []
+            },
+            "type": "aws_s3_bucket",
+            "values": {
+              "acceleration_status": "synthetic-aws-s3-bucket-scratch",
+              "acl": "synthetic-aws-s3-bucket-scratch",
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-s3-bucket-scratch",
+              "bucket": "acme-scratch-prod",
+              "bucket_domain_name": "synthetic-aws-s3-bucket-scratch",
+              "bucket_prefix": "synthetic-aws-s3-bucket-scratch",
+              "bucket_region": "synthetic-aws-s3-bucket-scratch",
+              "bucket_regional_domain_name": "synthetic-aws-s3-bucket-scratch",
+              "cors_rule": [],
+              "force_destroy": true,
+              "grant": [],
+              "hosted_zone_id": "synthetic-aws-s3-bucket-scratch",
+              "id": "synthetic-aws-s3-bucket-scratch",
+              "lifecycle_rule": [],
+              "logging": [],
+              "object_lock_configuration": [],
+              "object_lock_enabled": false,
+              "policy": "synthetic-aws-s3-bucket-scratch",
+              "region": "eu-west-1",
+              "replication_configuration": [],
+              "request_payer": "synthetic-aws-s3-bucket-scratch",
+              "server_side_encryption_configuration": [],
+              "tags": null,
+              "tags_all": {},
+              "timeouts": null,
+              "versioning": [],
+              "website": [],
+              "website_domain": "synthetic-aws-s3-bucket-scratch",
+              "website_endpoint": "synthetic-aws-s3-bucket-scratch"
+            }
+          },
+          {
+            "address": "aws_s3_bucket.statements",
+            "mode": "managed",
+            "name": "statements",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "cors_rule": [],
+              "grant": [],
+              "lifecycle_rule": [],
+              "logging": [],
+              "object_lock_configuration": [],
+              "replication_configuration": [],
+              "server_side_encryption_configuration": [],
+              "tags_all": {},
+              "versioning": [],
+              "website": []
+            },
+            "type": "aws_s3_bucket",
+            "values": {
+              "acceleration_status": "synthetic-aws-s3-bucket-statements",
+              "acl": "synthetic-aws-s3-bucket-statements",
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-s3-bucket-statements",
+              "bucket": "acme-statements-prod",
+              "bucket_domain_name": "synthetic-aws-s3-bucket-statements",
+              "bucket_prefix": "synthetic-aws-s3-bucket-statements",
+              "bucket_region": "synthetic-aws-s3-bucket-statements",
+              "bucket_regional_domain_name": "synthetic-aws-s3-bucket-statements",
+              "cors_rule": [],
+              "force_destroy": false,
+              "grant": [],
+              "hosted_zone_id": "synthetic-aws-s3-bucket-statements",
+              "id": "synthetic-aws-s3-bucket-statements",
+              "lifecycle_rule": [],
+              "logging": [],
+              "object_lock_configuration": [],
+              "object_lock_enabled": false,
+              "policy": "synthetic-aws-s3-bucket-statements",
+              "region": "eu-west-1",
+              "replication_configuration": [],
+              "request_payer": "synthetic-aws-s3-bucket-statements",
+              "server_side_encryption_configuration": [],
+              "tags": null,
+              "tags_all": {},
+              "timeouts": null,
+              "versioning": [],
+              "website": [],
+              "website_domain": "synthetic-aws-s3-bucket-statements",
+              "website_endpoint": "synthetic-aws-s3-bucket-statements"
+            }
+          },
+          {
+            "address": "aws_s3_bucket_public_access_block.statements",
+            "mode": "managed",
+            "name": "statements",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {},
+            "type": "aws_s3_bucket_public_access_block",
+            "values": {
+              "block_public_acls": true,
+              "block_public_policy": true,
+              "bucket": "synthetic-aws-s3-bucket-statements",
+              "id": "synthetic-aws-s3-bucket-public-access-block-statements",
+              "ignore_public_acls": true,
+              "region": "eu-west-1",
+              "restrict_public_buckets": true,
+              "skip_destroy": null
+            }
+          },
+          {
+            "address": "aws_security_group.api",
+            "mode": "managed",
+            "name": "api",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 1,
+            "sensitive_values": {
+              "egress": [],
+              "ingress": [],
+              "tags_all": {}
+            },
+            "type": "aws_security_group",
+            "values": {
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-security-group-api",
+              "description": "Managed by Terraform",
+              "egress": [],
+              "id": "synthetic-aws-security-group-api",
+              "ingress": [],
+              "name": "api",
+              "name_prefix": "synthetic-aws-security-group-api",
+              "owner_id": "synthetic-aws-security-group-api",
+              "region": "eu-west-1",
+              "revoke_rules_on_delete": false,
+              "tags": null,
+              "tags_all": {},
+              "timeouts": null,
+              "vpc_id": "vpc-0a1b2c3d4e5f60789"
+            }
+          },
+          {
+            "address": "aws_vpc_security_group_ingress_rule.https_internal",
+            "depends_on": [
+              "aws_security_group.api"
+            ],
+            "mode": "managed",
+            "name": "https_internal",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "schema_version": 0,
+            "sensitive_values": {
+              "tags_all": {}
+            },
+            "type": "aws_vpc_security_group_ingress_rule",
+            "values": {
+              "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-vpc-security-group-ingress-rule-https-internal",
+              "cidr_ipv4": "10.0.0.0/8",
+              "cidr_ipv6": null,
+              "description": null,
+              "from_port": 443,
+              "id": "synthetic-aws-vpc-security-group-ingress-rule-https-internal",
+              "ip_protocol": "tcp",
+              "prefix_list_id": null,
+              "referenced_security_group_id": null,
+              "region": "eu-west-1",
+              "security_group_id": "synthetic-aws-security-group-api",
+              "security_group_rule_id": "synthetic-aws-vpc-security-group-ingress-rule-https-internal",
+              "tags": null,
+              "tags_all": {},
+              "to_port": 443
+            }
+          }
+        ]
+      }
+    }
+  },
+  "relevant_attributes": [
+    {
+      "attribute": [
+        "id"
+      ],
+      "resource": "aws_iam_role.ci_deployer"
+    },
+    {
+      "attribute": [
+        "name"
+      ],
+      "resource": "aws_iam_role.ci_deployer"
+    },
+    {
+      "attribute": [
+        "id"
+      ],
+      "resource": "aws_s3_bucket.statements"
+    },
+    {
+      "attribute": [
+        "id"
+      ],
+      "resource": "aws_security_group.api"
+    }
+  ],
+  "resource_changes": [
+    {
+      "address": "aws_cloudwatch_log_group.service[\"api\"]",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-api",
+          "id": "synthetic-aws-cloudwatch-log-group-service-api",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-api",
+          "name": "/acme/api",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-api",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          },
+          "tags_all": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          }
+        },
+        "after_identity": {
+          "account_id": null,
+          "name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-api",
+          "id": "synthetic-aws-cloudwatch-log-group-service-api",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-api",
+          "name": "/acme/api",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-api",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "team": "payments"
+          },
+          "tags_all": {
+            "team": "payments"
+          }
+        },
+        "before_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        }
+      },
+      "index": "api",
+      "mode": "managed",
+      "name": "service",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_log_group"
+    },
+    {
+      "address": "aws_cloudwatch_log_group.service[\"ledger\"]",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-ledger",
+          "id": "synthetic-aws-cloudwatch-log-group-service-ledger",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-ledger",
+          "name": "/acme/ledger",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-ledger",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          },
+          "tags_all": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          }
+        },
+        "after_identity": {
+          "account_id": null,
+          "name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-ledger",
+          "id": "synthetic-aws-cloudwatch-log-group-service-ledger",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-ledger",
+          "name": "/acme/ledger",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-ledger",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "team": "payments"
+          },
+          "tags_all": {
+            "team": "payments"
+          }
+        },
+        "before_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        }
+      },
+      "index": "ledger",
+      "mode": "managed",
+      "name": "service",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_log_group"
+    },
+    {
+      "address": "aws_cloudwatch_log_group.service[\"payouts\"]",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-payouts",
+          "id": "synthetic-aws-cloudwatch-log-group-service-payouts",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-payouts",
+          "name": "/acme/payouts",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-payouts",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          },
+          "tags_all": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          }
+        },
+        "after_identity": {
+          "account_id": null,
+          "name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-payouts",
+          "id": "synthetic-aws-cloudwatch-log-group-service-payouts",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-payouts",
+          "name": "/acme/payouts",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-payouts",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "team": "payments"
+          },
+          "tags_all": {
+            "team": "payments"
+          }
+        },
+        "before_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        }
+      },
+      "index": "payouts",
+      "mode": "managed",
+      "name": "service",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_log_group"
+    },
+    {
+      "address": "aws_cloudwatch_log_group.service[\"refunds\"]",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-refunds",
+          "id": "synthetic-aws-cloudwatch-log-group-service-refunds",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-refunds",
+          "name": "/acme/refunds",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-refunds",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          },
+          "tags_all": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          }
+        },
+        "after_identity": {
+          "account_id": null,
+          "name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-refunds",
+          "id": "synthetic-aws-cloudwatch-log-group-service-refunds",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-refunds",
+          "name": "/acme/refunds",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-refunds",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "team": "payments"
+          },
+          "tags_all": {
+            "team": "payments"
+          }
+        },
+        "before_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        }
+      },
+      "index": "refunds",
+      "mode": "managed",
+      "name": "service",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_log_group"
+    },
+    {
+      "address": "aws_cloudwatch_log_group.service[\"webhooks\"]",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-webhooks",
+          "id": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+          "name": "/acme/webhooks",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          },
+          "tags_all": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          }
+        },
+        "after_identity": {
+          "account_id": null,
+          "name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-webhooks",
+          "id": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+          "name": "/acme/webhooks",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-webhooks",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "team": "payments"
+          },
+          "tags_all": {
+            "team": "payments"
+          }
+        },
+        "before_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        }
+      },
+      "index": "webhooks",
+      "mode": "managed",
+      "name": "service",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_log_group"
+    },
+    {
+      "address": "aws_cloudwatch_log_group.service[\"worker\"]",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-worker",
+          "id": "synthetic-aws-cloudwatch-log-group-service-worker",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-worker",
+          "name": "/acme/worker",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-worker",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          },
+          "tags_all": {
+            "cost_center": "cc-4410",
+            "team": "payments"
+          }
+        },
+        "after_identity": {
+          "account_id": null,
+          "name": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-cloudwatch-log-group-service-worker",
+          "id": "synthetic-aws-cloudwatch-log-group-service-worker",
+          "kms_key_id": null,
+          "log_group_class": "synthetic-aws-cloudwatch-log-group-service-worker",
+          "name": "/acme/worker",
+          "name_prefix": "synthetic-aws-cloudwatch-log-group-service-worker",
+          "region": "eu-west-1",
+          "retention_in_days": 30,
+          "skip_destroy": false,
+          "tags": {
+            "team": "payments"
+          },
+          "tags_all": {
+            "team": "payments"
+          }
+        },
+        "before_sensitive": {
+          "tags": {},
+          "tags_all": {}
+        }
+      },
+      "index": "worker",
+      "mode": "managed",
+      "name": "service",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_cloudwatch_log_group"
+    },
+    {
+      "address": "aws_iam_role.ci_deployer",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "after": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-iam-role-ci-deployer",
+          "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com\"}}],\"Version\":\"2012-10-17\"}",
+          "create_date": "synthetic-aws-iam-role-ci-deployer",
+          "description": null,
+          "force_detach_policies": false,
+          "id": "synthetic-aws-iam-role-ci-deployer",
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "max_session_duration": 3600,
+          "name": "ci-deployer",
+          "name_prefix": "synthetic-aws-iam-role-ci-deployer",
+          "path": "/",
+          "permissions_boundary": null,
+          "tags": null,
+          "tags_all": {},
+          "unique_id": "synthetic-aws-iam-role-ci-deployer"
+        },
+        "after_sensitive": {
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-iam-role-ci-deployer",
+          "assume_role_policy": "{\"Statement\":[{\"Action\":\"sts:AssumeRoleWithWebIdentity\",\"Effect\":\"Allow\",\"Principal\":{\"Federated\":\"arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com\"}}],\"Version\":\"2012-10-17\"}",
+          "create_date": "synthetic-aws-iam-role-ci-deployer",
+          "description": null,
+          "force_detach_policies": false,
+          "id": "synthetic-aws-iam-role-ci-deployer",
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "max_session_duration": 3600,
+          "name": "ci-deployer",
+          "name_prefix": "synthetic-aws-iam-role-ci-deployer",
+          "path": "/",
+          "permissions_boundary": null,
+          "tags": null,
+          "tags_all": {},
+          "unique_id": "synthetic-aws-iam-role-ci-deployer"
+        },
+        "before_sensitive": {
+          "inline_policy": [],
+          "managed_policy_arns": [],
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "ci_deployer",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_iam_role"
+    },
+    {
+      "address": "aws_iam_role_policy.ci_deployer",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "id": "synthetic-aws-iam-role-policy-ci-deployer",
+          "name": "deploy-statements",
+          "name_prefix": "synthetic-aws-iam-role-policy-ci-deployer",
+          "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:*\",\"iam:PassRole\"],\"Effect\":\"Allow\",\"Resource\":\"*\"}]}",
+          "role": "synthetic-aws-iam-role-ci-deployer"
+        },
+        "after_identity": {
+          "account_id": null,
+          "name": null,
+          "role": null
+        },
+        "after_sensitive": {},
+        "after_unknown": {},
+        "before": {
+          "id": "synthetic-aws-iam-role-policy-ci-deployer",
+          "name": "deploy-statements",
+          "name_prefix": "synthetic-aws-iam-role-policy-ci-deployer",
+          "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Action\":[\"s3:GetObject\",\"s3:PutObject\"],\"Effect\":\"Allow\",\"Resource\":\"arn:aws:s3:::acme-statements-prod/*\"}]}",
+          "role": "synthetic-aws-iam-role-ci-deployer"
+        },
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "ci_deployer",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_iam_role_policy"
+    },
+    {
+      "address": "aws_iam_role_policy_attachment.ci_admin",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "policy_arn": "arn:aws:iam::aws:policy/AdministratorAccess",
+          "role": "ci-deployer"
+        },
+        "after_identity": {
+          "account_id": null,
+          "policy_arn": null,
+          "role": null
+        },
+        "after_sensitive": {},
+        "after_unknown": {
+          "id": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "ci_admin",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_iam_role_policy_attachment"
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "address": "aws_s3_bucket.scratch",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_sensitive": false,
+        "after_unknown": {},
+        "before": {
+          "acceleration_status": "synthetic-aws-s3-bucket-scratch",
+          "acl": "synthetic-aws-s3-bucket-scratch",
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-s3-bucket-scratch",
+          "bucket": "acme-scratch-prod",
+          "bucket_domain_name": "synthetic-aws-s3-bucket-scratch",
+          "bucket_prefix": "synthetic-aws-s3-bucket-scratch",
+          "bucket_region": "synthetic-aws-s3-bucket-scratch",
+          "bucket_regional_domain_name": "synthetic-aws-s3-bucket-scratch",
+          "cors_rule": [],
+          "force_destroy": true,
+          "grant": [],
+          "hosted_zone_id": "synthetic-aws-s3-bucket-scratch",
+          "id": "synthetic-aws-s3-bucket-scratch",
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "object_lock_enabled": false,
+          "policy": "synthetic-aws-s3-bucket-scratch",
+          "region": "eu-west-1",
+          "replication_configuration": [],
+          "request_payer": "synthetic-aws-s3-bucket-scratch",
+          "server_side_encryption_configuration": [],
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "versioning": [],
+          "website": [],
+          "website_domain": "synthetic-aws-s3-bucket-scratch",
+          "website_endpoint": "synthetic-aws-s3-bucket-scratch"
+        },
+        "before_sensitive": {
+          "cors_rule": [],
+          "grant": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [],
+          "server_side_encryption_configuration": [],
+          "tags_all": {},
+          "versioning": [],
+          "website": []
+        }
+      },
+      "mode": "managed",
+      "name": "scratch",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_s3_bucket"
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "aws_s3_bucket.statements",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "bucket": "acme-statements-prod-eu",
+          "force_destroy": false,
+          "region": "eu-west-1",
+          "tags": null,
+          "timeouts": null
+        },
+        "after_identity": {
+          "account_id": null,
+          "bucket": null,
+          "region": null
+        },
+        "after_sensitive": {
+          "cors_rule": [],
+          "grant": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [],
+          "server_side_encryption_configuration": [],
+          "tags_all": {},
+          "versioning": [],
+          "website": []
+        },
+        "after_unknown": {
+          "acceleration_status": true,
+          "acl": true,
+          "arn": true,
+          "bucket_domain_name": true,
+          "bucket_prefix": true,
+          "bucket_region": true,
+          "bucket_regional_domain_name": true,
+          "cors_rule": true,
+          "grant": true,
+          "hosted_zone_id": true,
+          "id": true,
+          "lifecycle_rule": true,
+          "logging": true,
+          "object_lock_configuration": true,
+          "object_lock_enabled": true,
+          "policy": true,
+          "replication_configuration": true,
+          "request_payer": true,
+          "server_side_encryption_configuration": true,
+          "tags_all": true,
+          "versioning": true,
+          "website": true,
+          "website_domain": true,
+          "website_endpoint": true
+        },
+        "before": {
+          "acceleration_status": "synthetic-aws-s3-bucket-statements",
+          "acl": "synthetic-aws-s3-bucket-statements",
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-s3-bucket-statements",
+          "bucket": "acme-statements-prod",
+          "bucket_domain_name": "synthetic-aws-s3-bucket-statements",
+          "bucket_prefix": "synthetic-aws-s3-bucket-statements",
+          "bucket_region": "synthetic-aws-s3-bucket-statements",
+          "bucket_regional_domain_name": "synthetic-aws-s3-bucket-statements",
+          "cors_rule": [],
+          "force_destroy": false,
+          "grant": [],
+          "hosted_zone_id": "synthetic-aws-s3-bucket-statements",
+          "id": "synthetic-aws-s3-bucket-statements",
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "object_lock_enabled": false,
+          "policy": "synthetic-aws-s3-bucket-statements",
+          "region": "eu-west-1",
+          "replication_configuration": [],
+          "request_payer": "synthetic-aws-s3-bucket-statements",
+          "server_side_encryption_configuration": [],
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "versioning": [],
+          "website": [],
+          "website_domain": "synthetic-aws-s3-bucket-statements",
+          "website_endpoint": "synthetic-aws-s3-bucket-statements"
+        },
+        "before_sensitive": {
+          "cors_rule": [],
+          "grant": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "object_lock_configuration": [],
+          "replication_configuration": [],
+          "server_side_encryption_configuration": [],
+          "tags_all": {},
+          "versioning": [],
+          "website": []
+        },
+        "replace_paths": [
+          [
+            "bucket"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "name": "statements",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_s3_bucket"
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "aws_s3_bucket_public_access_block.statements",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "block_public_acls": true,
+          "block_public_policy": false,
+          "ignore_public_acls": true,
+          "region": "eu-west-1",
+          "restrict_public_buckets": false,
+          "skip_destroy": null
+        },
+        "after_identity": {
+          "account_id": null,
+          "bucket": null,
+          "region": null
+        },
+        "after_sensitive": {},
+        "after_unknown": {
+          "bucket": true,
+          "id": true
+        },
+        "before": {
+          "block_public_acls": true,
+          "block_public_policy": true,
+          "bucket": "synthetic-aws-s3-bucket-statements",
+          "id": "synthetic-aws-s3-bucket-public-access-block-statements",
+          "ignore_public_acls": true,
+          "region": "eu-west-1",
+          "restrict_public_buckets": true,
+          "skip_destroy": null
+        },
+        "before_sensitive": {},
+        "replace_paths": [
+          [
+            "bucket"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "name": "statements",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_s3_bucket_public_access_block"
+    },
+    {
+      "address": "aws_security_group.api",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "after": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-security-group-api",
+          "description": "Managed by Terraform",
+          "egress": [],
+          "id": "synthetic-aws-security-group-api",
+          "ingress": [],
+          "name": "api",
+          "name_prefix": "synthetic-aws-security-group-api",
+          "owner_id": "synthetic-aws-security-group-api",
+          "region": "eu-west-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "vpc_id": "vpc-0a1b2c3d4e5f60789"
+        },
+        "after_sensitive": {
+          "egress": [],
+          "ingress": [],
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-security-group-api",
+          "description": "Managed by Terraform",
+          "egress": [],
+          "id": "synthetic-aws-security-group-api",
+          "ingress": [],
+          "name": "api",
+          "name_prefix": "synthetic-aws-security-group-api",
+          "owner_id": "synthetic-aws-security-group-api",
+          "region": "eu-west-1",
+          "revoke_rules_on_delete": false,
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "vpc_id": "vpc-0a1b2c3d4e5f60789"
+        },
+        "before_sensitive": {
+          "egress": [],
+          "ingress": [],
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "api",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_security_group"
+    },
+    {
+      "address": "aws_sqs_queue.refund_events",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "content_based_deduplication": false,
+          "delay_seconds": 0,
+          "fifo_queue": false,
+          "kms_master_key_id": null,
+          "max_message_size": 262144,
+          "message_retention_seconds": 345600,
+          "name": "refund-events",
+          "receive_wait_time_seconds": 0,
+          "region": "eu-west-1",
+          "tags": null,
+          "timeouts": null,
+          "visibility_timeout_seconds": 30
+        },
+        "after_identity": {
+          "account_id": null,
+          "region": null,
+          "url": null
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "deduplication_scope": true,
+          "fifo_throughput_limit": true,
+          "id": true,
+          "kms_data_key_reuse_period_seconds": true,
+          "name_prefix": true,
+          "policy": true,
+          "redrive_allow_policy": true,
+          "redrive_policy": true,
+          "sqs_managed_sse_enabled": true,
+          "tags_all": true,
+          "url": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "refund_events",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_sqs_queue"
+    },
+    {
+      "address": "aws_vpc_security_group_ingress_rule.https_internal",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "after": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-vpc-security-group-ingress-rule-https-internal",
+          "cidr_ipv4": "10.0.0.0/8",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 443,
+          "id": "synthetic-aws-vpc-security-group-ingress-rule-https-internal",
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "eu-west-1",
+          "security_group_id": "synthetic-aws-security-group-api",
+          "security_group_rule_id": "synthetic-aws-vpc-security-group-ingress-rule-https-internal",
+          "tags": null,
+          "tags_all": {},
+          "to_port": 443
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:aws-vpc-security-group-ingress-rule-https-internal",
+          "cidr_ipv4": "10.0.0.0/8",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 443,
+          "id": "synthetic-aws-vpc-security-group-ingress-rule-https-internal",
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "eu-west-1",
+          "security_group_id": "synthetic-aws-security-group-api",
+          "security_group_rule_id": "synthetic-aws-vpc-security-group-ingress-rule-https-internal",
+          "tags": null,
+          "tags_all": {},
+          "to_port": 443
+        },
+        "before_sensitive": {
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "name": "https_internal",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_vpc_security_group_ingress_rule"
+    },
+    {
+      "address": "aws_vpc_security_group_ingress_rule.https_public",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "cidr_ipv4": "0.0.0.0/0",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 443,
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "eu-west-1",
+          "security_group_id": "synthetic-aws-security-group-api",
+          "tags": null,
+          "tags_all": {},
+          "to_port": 443
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "security_group_rule_id": true,
+          "tags_all": {}
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "https_public",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_vpc_security_group_ingress_rule"
+    },
+    {
+      "address": "aws_vpc_security_group_ingress_rule.ssh_debug",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "cidr_ipv4": "0.0.0.0/0",
+          "cidr_ipv6": null,
+          "description": null,
+          "from_port": 22,
+          "ip_protocol": "tcp",
+          "prefix_list_id": null,
+          "referenced_security_group_id": null,
+          "region": "eu-west-1",
+          "security_group_id": "synthetic-aws-security-group-api",
+          "tags": null,
+          "tags_all": {},
+          "to_port": 22
+        },
+        "after_sensitive": {
+          "tags_all": {}
+        },
+        "after_unknown": {
+          "arn": true,
+          "id": true,
+          "security_group_rule_id": true,
+          "tags_all": {}
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "ssh_debug",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_vpc_security_group_ingress_rule"
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "module.ledger_db.aws_db_instance.this",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "allocated_storage": 50,
+          "allow_major_version_upgrade": null,
+          "apply_immediately": false,
+          "auto_minor_version_upgrade": true,
+          "blue_green_update": [],
+          "copy_tags_to_snapshot": false,
+          "custom_iam_instance_profile": null,
+          "customer_owned_ip_enabled": null,
+          "dedicated_log_volume": false,
+          "delete_automated_backups": true,
+          "deletion_protection": false,
+          "domain": null,
+          "domain_auth_secret_arn": null,
+          "domain_dns_ips": null,
+          "domain_iam_role_name": null,
+          "domain_ou": null,
+          "enabled_cloudwatch_logs_exports": null,
+          "engine": "postgres",
+          "engine_version": "16.4",
+          "final_snapshot_identifier": null,
+          "iam_database_authentication_enabled": null,
+          "identifier": "ledger-pg",
+          "instance_class": "db.t4g.medium",
+          "manage_master_user_password": true,
+          "max_allocated_storage": null,
+          "monitoring_interval": 0,
+          "password": null,
+          "password_wo": null,
+          "password_wo_version": null,
+          "performance_insights_enabled": false,
+          "publicly_accessible": false,
+          "region": "eu-west-1",
+          "replicate_source_db": null,
+          "restore_to_point_in_time": [],
+          "s3_import": [],
+          "skip_final_snapshot": true,
+          "storage_encrypted": true,
+          "tags": null,
+          "timeouts": null,
+          "upgrade_storage_config": null,
+          "username": "ledger_admin"
+        },
+        "after_sensitive": {
+          "blue_green_update": [],
+          "listener_endpoint": [],
+          "master_user_secret": [],
+          "password": true,
+          "password_wo": true,
+          "replicas": [],
+          "restore_to_point_in_time": [],
+          "s3_import": [],
+          "tags_all": {},
+          "vpc_security_group_ids": []
+        },
+        "after_unknown": {
+          "address": true,
+          "arn": true,
+          "availability_zone": true,
+          "backup_retention_period": true,
+          "backup_target": true,
+          "backup_window": true,
+          "blue_green_update": [],
+          "ca_cert_identifier": true,
+          "character_set_name": true,
+          "database_insights_mode": true,
+          "db_name": true,
+          "db_subnet_group_name": true,
+          "domain_fqdn": true,
+          "endpoint": true,
+          "engine_lifecycle_support": true,
+          "engine_version_actual": true,
+          "hosted_zone_id": true,
+          "id": true,
+          "identifier_prefix": true,
+          "iops": true,
+          "kms_key_id": true,
+          "latest_restorable_time": true,
+          "license_model": true,
+          "listener_endpoint": true,
+          "maintenance_window": true,
+          "master_user_secret": true,
+          "master_user_secret_kms_key_id": true,
+          "monitoring_role_arn": true,
+          "multi_az": true,
+          "nchar_character_set_name": true,
+          "network_type": true,
+          "option_group_name": true,
+          "parameter_group_name": true,
+          "performance_insights_kms_key_id": true,
+          "performance_insights_retention_period": true,
+          "port": true,
+          "replica_mode": true,
+          "replicas": true,
+          "resource_id": true,
+          "restore_to_point_in_time": [],
+          "s3_import": [],
+          "snapshot_identifier": true,
+          "status": true,
+          "storage_throughput": true,
+          "storage_type": true,
+          "tags_all": true,
+          "timezone": true,
+          "vpc_security_group_ids": true
+        },
+        "before": {
+          "address": "synthetic-module-ledger-db-aws-db-instance-this",
+          "allocated_storage": 50,
+          "allow_major_version_upgrade": null,
+          "apply_immediately": false,
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:module-ledger-db-aws-db-instance-this",
+          "auto_minor_version_upgrade": true,
+          "availability_zone": "synthetic-module-ledger-db-aws-db-instance-this",
+          "backup_retention_period": 0,
+          "backup_target": "synthetic-module-ledger-db-aws-db-instance-this",
+          "backup_window": "synthetic-module-ledger-db-aws-db-instance-this",
+          "blue_green_update": [],
+          "ca_cert_identifier": "synthetic-module-ledger-db-aws-db-instance-this",
+          "character_set_name": "synthetic-module-ledger-db-aws-db-instance-this",
+          "copy_tags_to_snapshot": false,
+          "custom_iam_instance_profile": null,
+          "customer_owned_ip_enabled": null,
+          "database_insights_mode": "synthetic-module-ledger-db-aws-db-instance-this",
+          "db_name": "synthetic-module-ledger-db-aws-db-instance-this",
+          "db_subnet_group_name": "synthetic-module-ledger-db-aws-db-instance-this",
+          "dedicated_log_volume": false,
+          "delete_automated_backups": true,
+          "deletion_protection": false,
+          "domain": null,
+          "domain_auth_secret_arn": null,
+          "domain_dns_ips": null,
+          "domain_fqdn": "synthetic-module-ledger-db-aws-db-instance-this",
+          "domain_iam_role_name": null,
+          "domain_ou": null,
+          "enabled_cloudwatch_logs_exports": null,
+          "endpoint": "synthetic-module-ledger-db-aws-db-instance-this",
+          "engine": "postgres",
+          "engine_lifecycle_support": "synthetic-module-ledger-db-aws-db-instance-this",
+          "engine_version": "16.4",
+          "engine_version_actual": "synthetic-module-ledger-db-aws-db-instance-this",
+          "final_snapshot_identifier": null,
+          "hosted_zone_id": "synthetic-module-ledger-db-aws-db-instance-this",
+          "iam_database_authentication_enabled": null,
+          "id": "synthetic-module-ledger-db-aws-db-instance-this",
+          "identifier": "ledger-pg",
+          "identifier_prefix": "synthetic-module-ledger-db-aws-db-instance-this",
+          "instance_class": "db.t4g.medium",
+          "iops": 0,
+          "kms_key_id": "synthetic-module-ledger-db-aws-db-instance-this",
+          "latest_restorable_time": "synthetic-module-ledger-db-aws-db-instance-this",
+          "license_model": "synthetic-module-ledger-db-aws-db-instance-this",
+          "listener_endpoint": [],
+          "maintenance_window": "synthetic-module-ledger-db-aws-db-instance-this",
+          "manage_master_user_password": true,
+          "master_user_secret": [],
+          "master_user_secret_kms_key_id": "synthetic-module-ledger-db-aws-db-instance-this",
+          "max_allocated_storage": null,
+          "monitoring_interval": 0,
+          "monitoring_role_arn": "synthetic-module-ledger-db-aws-db-instance-this",
+          "multi_az": false,
+          "nchar_character_set_name": "synthetic-module-ledger-db-aws-db-instance-this",
+          "network_type": "synthetic-module-ledger-db-aws-db-instance-this",
+          "option_group_name": "synthetic-module-ledger-db-aws-db-instance-this",
+          "parameter_group_name": "synthetic-module-ledger-db-aws-db-instance-this",
+          "password": null,
+          "password_wo": null,
+          "password_wo_version": null,
+          "performance_insights_enabled": false,
+          "performance_insights_kms_key_id": "synthetic-module-ledger-db-aws-db-instance-this",
+          "performance_insights_retention_period": 0,
+          "port": 0,
+          "publicly_accessible": false,
+          "region": "eu-west-1",
+          "replica_mode": "synthetic-module-ledger-db-aws-db-instance-this",
+          "replicas": [],
+          "replicate_source_db": null,
+          "resource_id": "synthetic-module-ledger-db-aws-db-instance-this",
+          "restore_to_point_in_time": [],
+          "s3_import": [],
+          "skip_final_snapshot": true,
+          "snapshot_identifier": "synthetic-module-ledger-db-aws-db-instance-this",
+          "status": "synthetic-module-ledger-db-aws-db-instance-this",
+          "storage_encrypted": false,
+          "storage_throughput": 0,
+          "storage_type": "synthetic-module-ledger-db-aws-db-instance-this",
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "timezone": "synthetic-module-ledger-db-aws-db-instance-this",
+          "upgrade_storage_config": null,
+          "username": "ledger_admin",
+          "vpc_security_group_ids": []
+        },
+        "before_sensitive": {
+          "blue_green_update": [],
+          "listener_endpoint": [],
+          "master_user_secret": [],
+          "password": true,
+          "password_wo": true,
+          "replicas": [],
+          "restore_to_point_in_time": [],
+          "s3_import": [],
+          "tags_all": {},
+          "vpc_security_group_ids": []
+        },
+        "replace_paths": [
+          [
+            "storage_encrypted"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "module_address": "module.ledger_db",
+      "name": "this",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_db_instance"
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "address": "module.ledger_db.aws_kms_key.legacy",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_sensitive": false,
+        "after_unknown": {},
+        "before": {
+          "arn": "arn:aws:synthetic:eu-west-1:111122223333:module-ledger-db-aws-kms-key-legacy",
+          "bypass_policy_lockout_safety_check": false,
+          "custom_key_store_id": null,
+          "customer_master_key_spec": "SYMMETRIC_DEFAULT",
+          "deletion_window_in_days": 30,
+          "description": "ledger legacy key",
+          "enable_key_rotation": false,
+          "id": "synthetic-module-ledger-db-aws-kms-key-legacy",
+          "is_enabled": true,
+          "key_id": "synthetic-module-ledger-db-aws-kms-key-legacy",
+          "key_usage": "ENCRYPT_DECRYPT",
+          "multi_region": false,
+          "policy": "synthetic-module-ledger-db-aws-kms-key-legacy",
+          "region": "eu-west-1",
+          "rotation_period_in_days": 0,
+          "tags": null,
+          "tags_all": {},
+          "timeouts": null,
+          "xks_key_id": null
+        },
+        "before_sensitive": {
+          "tags_all": {}
+        }
+      },
+      "mode": "managed",
+      "module_address": "module.ledger_db",
+      "name": "legacy",
+      "provider_name": "registry.terraform.io/hashicorp/aws",
+      "type": "aws_kms_key"
+    }
+  ],
+  "terraform_version": "1.16.5",
+  "timestamp": "2026-10-10T19:05:26Z"
+}

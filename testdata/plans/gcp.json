@@ -1,0 +1,2506 @@
+{
+  "configuration": {
+    "provider_config": {
+      "google": {
+        "expressions": {
+          "access_token": {
+            "constant_value": "synthetic"
+          },
+          "project": {
+            "constant_value": "acme-payments-prod"
+          },
+          "region": {
+            "constant_value": "europe-west1"
+          }
+        },
+        "full_name": "registry.opentofu.org/hashicorp/google",
+        "name": "google",
+        "version_constraint": "6.50.0"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "google_compute_address.partner_sftp",
+          "expressions": {
+            "name": {
+              "constant_value": "partner-sftp"
+            },
+            "region": {
+              "constant_value": "europe-west1"
+            }
+          },
+          "mode": "managed",
+          "name": "partner_sftp",
+          "provider_config_key": "google",
+          "schema_version": 0,
+          "type": "google_compute_address"
+        },
+        {
+          "address": "google_compute_disk.cache",
+          "expressions": {
+            "name": {
+              "constant_value": "settlement-cache"
+            },
+            "size": {
+              "constant_value": 200
+            },
+            "type": {
+              "constant_value": "pd-ssd"
+            },
+            "zone": {
+              "constant_value": "europe-west1-b"
+            }
+          },
+          "mode": "managed",
+          "name": "cache",
+          "provider_config_key": "google",
+          "schema_version": 0,
+          "type": "google_compute_disk"
+        },
+        {
+          "address": "google_compute_firewall.internal",
+          "expressions": {
+            "allow": [
+              {
+                "ports": {
+                  "constant_value": [
+                    "0-65535"
+                  ]
+                },
+                "protocol": {
+                  "constant_value": "tcp"
+                }
+              }
+            ],
+            "name": {
+              "constant_value": "allow-internal"
+            },
+            "network": {
+              "constant_value": "default"
+            },
+            "source_ranges": {
+              "constant_value": [
+                "10.128.0.0/9"
+              ]
+            }
+          },
+          "mode": "managed",
+          "name": "internal",
+          "provider_config_key": "google",
+          "schema_version": 1,
+          "type": "google_compute_firewall"
+        },
+        {
+          "address": "google_compute_firewall.ssh_iap_debug",
+          "expressions": {
+            "allow": [
+              {
+                "ports": {
+                  "constant_value": [
+                    "22"
+                  ]
+                },
+                "protocol": {
+                  "constant_value": "tcp"
+                }
+              }
+            ],
+            "name": {
+              "constant_value": "allow-ssh-debug"
+            },
+            "network": {
+              "constant_value": "default"
+            },
+            "source_ranges": {
+              "constant_value": [
+                "0.0.0.0/0"
+              ]
+            }
+          },
+          "mode": "managed",
+          "name": "ssh_iap_debug",
+          "provider_config_key": "google",
+          "schema_version": 1,
+          "type": "google_compute_firewall"
+        },
+        {
+          "address": "google_kms_key_ring.payments",
+          "expressions": {
+            "location": {
+              "constant_value": "europe-west1"
+            },
+            "name": {
+              "constant_value": "payments"
+            }
+          },
+          "mode": "managed",
+          "name": "payments",
+          "provider_config_key": "google",
+          "schema_version": 0,
+          "type": "google_kms_key_ring"
+        },
+        {
+          "address": "google_project_iam_member.ci_owner",
+          "expressions": {
+            "member": {
+              "constant_value": "serviceAccount:ci-deployer@acme-payments-prod.iam.gserviceaccount.com"
+            },
+            "project": {
+              "constant_value": "acme-payments-prod"
+            },
+            "role": {
+              "constant_value": "roles/owner"
+            }
+          },
+          "mode": "managed",
+          "name": "ci_owner",
+          "provider_config_key": "google",
+          "schema_version": 0,
+          "type": "google_project_iam_member"
+        },
+        {
+          "address": "google_pubsub_topic.events",
+          "expressions": {
+            "labels": {
+              "constant_value": {
+                "env": "prod",
+                "team": "payments"
+              }
+            },
+            "name": {
+              "references": [
+                "each.key"
+              ]
+            }
+          },
+          "mode": "managed",
+          "name": "events",
+          "provider_config_key": "google",
+          "schema_version": 0,
+          "type": "google_pubsub_topic"
+        },
+        {
+          "address": "google_sql_database_instance.ledger",
+          "expressions": {
+            "database_version": {
+              "constant_value": "POSTGRES_16"
+            },
+            "deletion_protection": {
+              "constant_value": false
+            },
+            "name": {
+              "constant_value": "ledger-pg"
+            },
+            "region": {
+              "constant_value": "europe-west2"
+            },
+            "settings": [
+              {
+                "tier": {
+                  "constant_value": "db-custom-2-7680"
+                }
+              }
+            ]
+          },
+          "mode": "managed",
+          "name": "ledger",
+          "provider_config_key": "google",
+          "schema_version": 0,
+          "type": "google_sql_database_instance"
+        },
+        {
+          "address": "google_storage_bucket.reports",
+          "expressions": {
+            "location": {
+              "constant_value": "EU"
+            },
+            "name": {
+              "constant_value": "acme-reports-prod"
+            },
+            "uniform_bucket_level_access": {
+              "constant_value": true
+            }
+          },
+          "mode": "managed",
+          "name": "reports",
+          "provider_config_key": "google",
+          "schema_version": 3,
+          "type": "google_storage_bucket"
+        },
+        {
+          "address": "google_storage_bucket_iam_member.reports_partner",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "google_storage_bucket.reports.name",
+                "google_storage_bucket.reports"
+              ]
+            },
+            "member": {
+              "constant_value": "allUsers"
+            },
+            "role": {
+              "constant_value": "roles/storage.objectViewer"
+            }
+          },
+          "mode": "managed",
+          "name": "reports_partner",
+          "provider_config_key": "google",
+          "schema_version": 0,
+          "type": "google_storage_bucket_iam_member"
+        }
+      ]
+    }
+  },
+  "errored": false,
+  "format_version": "1.2",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "google_compute_address.partner_sftp",
+          "mode": "managed",
+          "name": "partner_sftp",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 0,
+          "sensitive_values": {
+            "effective_labels": {},
+            "terraform_labels": {},
+            "users": []
+          },
+          "type": "google_compute_address",
+          "values": {
+            "address_type": "EXTERNAL",
+            "description": null,
+            "effective_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "ip_version": null,
+            "ipv6_endpoint_type": null,
+            "labels": null,
+            "name": "partner-sftp",
+            "network": null,
+            "project": "acme-payments-prod",
+            "region": "europe-west1",
+            "terraform_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "timeouts": null
+          }
+        },
+        {
+          "address": "google_compute_disk.cache",
+          "mode": "managed",
+          "name": "cache",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 0,
+          "sensitive_values": {
+            "async_primary_disk": [],
+            "disk_encryption_key": [],
+            "effective_labels": {},
+            "guest_os_features": [],
+            "licenses": [],
+            "params": [],
+            "source_image_encryption_key": [],
+            "source_snapshot_encryption_key": [],
+            "terraform_labels": {},
+            "users": []
+          },
+          "type": "google_compute_disk",
+          "values": {
+            "architecture": null,
+            "async_primary_disk": [],
+            "create_snapshot_before_destroy": false,
+            "create_snapshot_before_destroy_prefix": null,
+            "description": null,
+            "disk_encryption_key": [],
+            "effective_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "image": null,
+            "labels": null,
+            "name": "settlement-cache",
+            "params": [],
+            "project": "acme-payments-prod",
+            "size": 200,
+            "snapshot": null,
+            "source_disk": null,
+            "source_image_encryption_key": [],
+            "source_instant_snapshot": null,
+            "source_snapshot_encryption_key": [],
+            "source_storage_object": null,
+            "storage_pool": null,
+            "terraform_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "timeouts": null,
+            "type": "pd-ssd",
+            "zone": "europe-west1-b"
+          }
+        },
+        {
+          "address": "google_compute_firewall.internal",
+          "mode": "managed",
+          "name": "internal",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 1,
+          "sensitive_values": {
+            "allow": [
+              {
+                "ports": [
+                  false
+                ]
+              }
+            ],
+            "deny": [],
+            "destination_ranges": [],
+            "log_config": [],
+            "params": [],
+            "source_ranges": [
+              false
+            ]
+          },
+          "type": "google_compute_firewall",
+          "values": {
+            "allow": [
+              {
+                "ports": [
+                  "0-65535"
+                ],
+                "protocol": "tcp"
+              }
+            ],
+            "creation_timestamp": "synthetic-google-compute-firewall-internal",
+            "deny": [],
+            "description": null,
+            "destination_ranges": [],
+            "direction": "synthetic-google-compute-firewall-internal",
+            "disabled": null,
+            "enable_logging": false,
+            "id": "synthetic-google-compute-firewall-internal",
+            "log_config": [],
+            "name": "allow-internal",
+            "network": "default",
+            "params": [],
+            "priority": 1000,
+            "project": "acme-payments-prod",
+            "self_link": "synthetic-google-compute-firewall-internal",
+            "source_ranges": [
+              "10.128.0.0/9"
+            ],
+            "source_service_accounts": null,
+            "source_tags": null,
+            "target_service_accounts": null,
+            "target_tags": null,
+            "timeouts": null
+          }
+        },
+        {
+          "address": "google_compute_firewall.ssh_iap_debug",
+          "mode": "managed",
+          "name": "ssh_iap_debug",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 1,
+          "sensitive_values": {
+            "allow": [
+              {
+                "ports": [
+                  false
+                ]
+              }
+            ],
+            "deny": [],
+            "destination_ranges": [],
+            "log_config": [],
+            "params": [],
+            "source_ranges": [
+              false
+            ]
+          },
+          "type": "google_compute_firewall",
+          "values": {
+            "allow": [
+              {
+                "ports": [
+                  "22"
+                ],
+                "protocol": "tcp"
+              }
+            ],
+            "deny": [],
+            "description": null,
+            "disabled": null,
+            "log_config": [],
+            "name": "allow-ssh-debug",
+            "network": "default",
+            "params": [],
+            "priority": 1000,
+            "project": "acme-payments-prod",
+            "source_ranges": [
+              "0.0.0.0/0"
+            ],
+            "source_service_accounts": null,
+            "source_tags": null,
+            "target_service_accounts": null,
+            "target_tags": null,
+            "timeouts": null
+          }
+        },
+        {
+          "address": "google_kms_key_ring.payments",
+          "mode": "managed",
+          "name": "payments",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 0,
+          "sensitive_values": {},
+          "type": "google_kms_key_ring",
+          "values": {
+            "id": "synthetic-google-kms-key-ring-payments",
+            "location": "europe-west1",
+            "name": "payments",
+            "project": "acme-payments-prod",
+            "timeouts": null
+          }
+        },
+        {
+          "address": "google_project_iam_member.ci_owner",
+          "mode": "managed",
+          "name": "ci_owner",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 0,
+          "sensitive_values": {
+            "condition": []
+          },
+          "type": "google_project_iam_member",
+          "values": {
+            "condition": [],
+            "member": "serviceAccount:ci-deployer@acme-payments-prod.iam.gserviceaccount.com",
+            "project": "acme-payments-prod",
+            "role": "roles/owner"
+          }
+        },
+        {
+          "address": "google_pubsub_topic.events[\"chargebacks\"]",
+          "index": "chargebacks",
+          "mode": "managed",
+          "name": "events",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 0,
+          "sensitive_values": {
+            "effective_labels": {},
+            "ingestion_data_source_settings": [],
+            "labels": {},
+            "message_storage_policy": [],
+            "message_transforms": [],
+            "schema_settings": [],
+            "terraform_labels": {}
+          },
+          "type": "google_pubsub_topic",
+          "values": {
+            "effective_labels": {
+              "env": "prod",
+              "goog-terraform-provisioned": "true",
+              "team": "payments"
+            },
+            "id": "synthetic-google-pubsub-topic-events-chargebacks",
+            "ingestion_data_source_settings": [],
+            "kms_key_name": null,
+            "labels": {
+              "env": "prod",
+              "team": "payments"
+            },
+            "message_retention_duration": null,
+            "message_storage_policy": [],
+            "message_transforms": [],
+            "name": "chargebacks",
+            "project": "acme-payments-prod",
+            "schema_settings": [],
+            "terraform_labels": {
+              "env": "prod",
+              "goog-terraform-provisioned": "true",
+              "team": "payments"
+            },
+            "timeouts": null
+          }
+        },
+        {
+          "address": "google_pubsub_topic.events[\"refunds\"]",
+          "index": "refunds",
+          "mode": "managed",
+          "name": "events",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 0,
+          "sensitive_values": {
+            "effective_labels": {},
+            "ingestion_data_source_settings": [],
+            "labels": {},
+            "message_storage_policy": [],
+            "message_transforms": [],
+            "schema_settings": [],
+            "terraform_labels": {}
+          },
+          "type": "google_pubsub_topic",
+          "values": {
+            "effective_labels": {
+              "env": "prod",
+              "goog-terraform-provisioned": "true",
+              "team": "payments"
+            },
+            "id": "synthetic-google-pubsub-topic-events-refunds",
+            "ingestion_data_source_settings": [],
+            "kms_key_name": null,
+            "labels": {
+              "env": "prod",
+              "team": "payments"
+            },
+            "message_retention_duration": null,
+            "message_storage_policy": [],
+            "message_transforms": [],
+            "name": "refunds",
+            "project": "acme-payments-prod",
+            "schema_settings": [],
+            "terraform_labels": {
+              "env": "prod",
+              "goog-terraform-provisioned": "true",
+              "team": "payments"
+            },
+            "timeouts": null
+          }
+        },
+        {
+          "address": "google_pubsub_topic.events[\"settlements\"]",
+          "index": "settlements",
+          "mode": "managed",
+          "name": "events",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 0,
+          "sensitive_values": {
+            "effective_labels": {},
+            "ingestion_data_source_settings": [],
+            "labels": {},
+            "message_storage_policy": [],
+            "message_transforms": [],
+            "schema_settings": [],
+            "terraform_labels": {}
+          },
+          "type": "google_pubsub_topic",
+          "values": {
+            "effective_labels": {
+              "env": "prod",
+              "goog-terraform-provisioned": "true",
+              "team": "payments"
+            },
+            "id": "synthetic-google-pubsub-topic-events-settlements",
+            "ingestion_data_source_settings": [],
+            "kms_key_name": null,
+            "labels": {
+              "env": "prod",
+              "team": "payments"
+            },
+            "message_retention_duration": null,
+            "message_storage_policy": [],
+            "message_transforms": [],
+            "name": "settlements",
+            "project": "acme-payments-prod",
+            "schema_settings": [],
+            "terraform_labels": {
+              "env": "prod",
+              "goog-terraform-provisioned": "true",
+              "team": "payments"
+            },
+            "timeouts": null
+          }
+        },
+        {
+          "address": "google_sql_database_instance.ledger",
+          "mode": "managed",
+          "name": "ledger",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 0,
+          "sensitive_values": {
+            "available_maintenance_versions": [],
+            "clone": [],
+            "dns_names": [],
+            "ip_address": [],
+            "replica_configuration": [],
+            "replica_names": [],
+            "replication_cluster": [],
+            "restore_backup_context": [],
+            "server_ca_cert": [],
+            "settings": [
+              {
+                "active_directory_config": [],
+                "advanced_machine_features": [],
+                "backup_configuration": [],
+                "connection_pool_config": [],
+                "data_cache_config": [],
+                "database_flags": [],
+                "deny_maintenance_period": [],
+                "insights_config": [],
+                "ip_configuration": [],
+                "location_preference": [],
+                "maintenance_window": [],
+                "password_validation_policy": [],
+                "sql_server_audit_config": [],
+                "user_labels": {}
+              }
+            ]
+          },
+          "type": "google_sql_database_instance",
+          "values": {
+            "clone": [],
+            "database_version": "POSTGRES_16",
+            "deletion_protection": false,
+            "name": "ledger-pg",
+            "project": "acme-payments-prod",
+            "region": "europe-west2",
+            "restore_backup_context": [],
+            "root_password": null,
+            "settings": [
+              {
+                "activation_policy": "ALWAYS",
+                "active_directory_config": [],
+                "advanced_machine_features": [],
+                "availability_type": "ZONAL",
+                "collation": null,
+                "database_flags": [],
+                "deletion_protection_enabled": null,
+                "deny_maintenance_period": [],
+                "disk_autoresize": true,
+                "disk_autoresize_limit": 0,
+                "enable_dataplex_integration": null,
+                "enable_google_ml_integration": null,
+                "maintenance_window": [],
+                "password_validation_policy": [],
+                "pricing_plan": "PER_USE",
+                "retain_backups_on_delete": null,
+                "sql_server_audit_config": [],
+                "tier": "db-custom-2-7680",
+                "time_zone": null
+              }
+            ],
+            "timeouts": null
+          }
+        },
+        {
+          "address": "google_storage_bucket.reports",
+          "mode": "managed",
+          "name": "reports",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 3,
+          "sensitive_values": {
+            "autoclass": [],
+            "cors": [],
+            "custom_placement_config": [],
+            "effective_labels": {},
+            "encryption": [],
+            "hierarchical_namespace": [],
+            "ip_filter": [],
+            "lifecycle_rule": [],
+            "logging": [],
+            "retention_policy": [],
+            "soft_delete_policy": [],
+            "terraform_labels": {},
+            "versioning": [],
+            "website": []
+          },
+          "type": "google_storage_bucket",
+          "values": {
+            "autoclass": [],
+            "cors": [],
+            "custom_placement_config": [],
+            "default_event_based_hold": null,
+            "effective_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "enable_object_retention": null,
+            "encryption": [],
+            "force_destroy": false,
+            "hierarchical_namespace": [],
+            "id": "synthetic-google-storage-bucket-reports",
+            "ip_filter": [],
+            "labels": null,
+            "lifecycle_rule": [],
+            "location": "EU",
+            "logging": [],
+            "name": "acme-reports-prod",
+            "project": "synthetic-google-storage-bucket-reports",
+            "project_number": 0,
+            "public_access_prevention": "synthetic-google-storage-bucket-reports",
+            "requester_pays": null,
+            "retention_policy": [],
+            "rpo": "synthetic-google-storage-bucket-reports",
+            "self_link": "synthetic-google-storage-bucket-reports",
+            "soft_delete_policy": [],
+            "storage_class": "STANDARD",
+            "terraform_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "time_created": "synthetic-google-storage-bucket-reports",
+            "timeouts": null,
+            "uniform_bucket_level_access": true,
+            "updated": "synthetic-google-storage-bucket-reports",
+            "url": "synthetic-google-storage-bucket-reports",
+            "versioning": [],
+            "website": []
+          }
+        },
+        {
+          "address": "google_storage_bucket_iam_member.reports_partner",
+          "mode": "managed",
+          "name": "reports_partner",
+          "provider_name": "registry.opentofu.org/hashicorp/google",
+          "schema_version": 0,
+          "sensitive_values": {
+            "condition": []
+          },
+          "type": "google_storage_bucket_iam_member",
+          "values": {
+            "bucket": "acme-reports-prod",
+            "condition": [],
+            "member": "allUsers",
+            "role": "roles/storage.objectViewer"
+          }
+        }
+      ]
+    }
+  },
+  "prior_state": {
+    "format_version": "1.0",
+    "terraform_version": "1.13.1",
+    "values": {
+      "root_module": {
+        "resources": [
+          {
+            "address": "google_compute_disk.cache",
+            "mode": "managed",
+            "name": "cache",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 0,
+            "sensitive_values": {
+              "async_primary_disk": [],
+              "disk_encryption_key": [],
+              "effective_labels": {},
+              "guest_os_features": [],
+              "licenses": [],
+              "params": [],
+              "source_image_encryption_key": [],
+              "source_snapshot_encryption_key": [],
+              "terraform_labels": {},
+              "users": []
+            },
+            "type": "google_compute_disk",
+            "values": {
+              "access_mode": "synthetic-google-compute-disk-cache",
+              "architecture": null,
+              "async_primary_disk": [],
+              "create_snapshot_before_destroy": false,
+              "create_snapshot_before_destroy_prefix": null,
+              "creation_timestamp": "synthetic-google-compute-disk-cache",
+              "description": null,
+              "disk_encryption_key": [],
+              "disk_id": "synthetic-google-compute-disk-cache",
+              "effective_labels": {
+                "goog-terraform-provisioned": "true"
+              },
+              "enable_confidential_compute": false,
+              "guest_os_features": [],
+              "id": "synthetic-google-compute-disk-cache",
+              "image": null,
+              "label_fingerprint": "synthetic-google-compute-disk-cache",
+              "labels": null,
+              "last_attach_timestamp": "synthetic-google-compute-disk-cache",
+              "last_detach_timestamp": "synthetic-google-compute-disk-cache",
+              "licenses": [],
+              "name": "settlement-cache",
+              "params": [],
+              "physical_block_size_bytes": 0,
+              "project": "acme-payments-prod",
+              "provisioned_iops": 0,
+              "provisioned_throughput": 0,
+              "self_link": "synthetic-google-compute-disk-cache",
+              "size": 200,
+              "snapshot": null,
+              "source_disk": null,
+              "source_disk_id": "synthetic-google-compute-disk-cache",
+              "source_image_encryption_key": [],
+              "source_image_id": "synthetic-google-compute-disk-cache",
+              "source_instant_snapshot": null,
+              "source_instant_snapshot_id": "synthetic-google-compute-disk-cache",
+              "source_snapshot_encryption_key": [],
+              "source_snapshot_id": "synthetic-google-compute-disk-cache",
+              "source_storage_object": null,
+              "storage_pool": null,
+              "terraform_labels": {
+                "goog-terraform-provisioned": "true"
+              },
+              "timeouts": null,
+              "type": "pd-standard",
+              "users": [],
+              "zone": "europe-west1-b"
+            }
+          },
+          {
+            "address": "google_compute_firewall.internal",
+            "mode": "managed",
+            "name": "internal",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 1,
+            "sensitive_values": {
+              "allow": [
+                {
+                  "ports": [
+                    false
+                  ]
+                }
+              ],
+              "deny": [],
+              "destination_ranges": [],
+              "log_config": [],
+              "params": [],
+              "source_ranges": [
+                false
+              ]
+            },
+            "type": "google_compute_firewall",
+            "values": {
+              "allow": [
+                {
+                  "ports": [
+                    "0-65535"
+                  ],
+                  "protocol": "tcp"
+                }
+              ],
+              "creation_timestamp": "synthetic-google-compute-firewall-internal",
+              "deny": [],
+              "description": null,
+              "destination_ranges": [],
+              "direction": "synthetic-google-compute-firewall-internal",
+              "disabled": null,
+              "enable_logging": false,
+              "id": "synthetic-google-compute-firewall-internal",
+              "log_config": [],
+              "name": "allow-internal",
+              "network": "default",
+              "params": [],
+              "priority": 1000,
+              "project": "acme-payments-prod",
+              "self_link": "synthetic-google-compute-firewall-internal",
+              "source_ranges": [
+                "10.128.0.0/9"
+              ],
+              "source_service_accounts": null,
+              "source_tags": null,
+              "target_service_accounts": null,
+              "target_tags": null,
+              "timeouts": null
+            }
+          },
+          {
+            "address": "google_kms_crypto_key.card_vault",
+            "mode": "managed",
+            "name": "card_vault",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 1,
+            "sensitive_values": {
+              "effective_labels": {},
+              "primary": [],
+              "terraform_labels": {},
+              "version_template": []
+            },
+            "type": "google_kms_crypto_key",
+            "values": {
+              "crypto_key_backend": "synthetic-google-kms-crypto-key-card-vault",
+              "destroy_scheduled_duration": "synthetic-google-kms-crypto-key-card-vault",
+              "effective_labels": {
+                "goog-terraform-provisioned": "true"
+              },
+              "id": "synthetic-google-kms-crypto-key-card-vault",
+              "import_only": false,
+              "key_ring": "synthetic-google-kms-key-ring-payments",
+              "labels": null,
+              "name": "card-vault",
+              "primary": [],
+              "purpose": "ENCRYPT_DECRYPT",
+              "rotation_period": null,
+              "skip_initial_version_creation": null,
+              "terraform_labels": {
+                "goog-terraform-provisioned": "true"
+              },
+              "timeouts": null,
+              "version_template": []
+            }
+          },
+          {
+            "address": "google_kms_key_ring.payments",
+            "mode": "managed",
+            "name": "payments",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 0,
+            "sensitive_values": {},
+            "type": "google_kms_key_ring",
+            "values": {
+              "id": "synthetic-google-kms-key-ring-payments",
+              "location": "europe-west1",
+              "name": "payments",
+              "project": "acme-payments-prod",
+              "timeouts": null
+            }
+          },
+          {
+            "address": "google_pubsub_topic.events[\"chargebacks\"]",
+            "index": "chargebacks",
+            "mode": "managed",
+            "name": "events",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 0,
+            "sensitive_values": {
+              "effective_labels": {},
+              "ingestion_data_source_settings": [],
+              "labels": {},
+              "message_storage_policy": [],
+              "message_transforms": [],
+              "schema_settings": [],
+              "terraform_labels": {}
+            },
+            "type": "google_pubsub_topic",
+            "values": {
+              "effective_labels": {
+                "goog-terraform-provisioned": "true",
+                "team": "payments"
+              },
+              "id": "synthetic-google-pubsub-topic-events-chargebacks",
+              "ingestion_data_source_settings": [],
+              "kms_key_name": null,
+              "labels": {
+                "team": "payments"
+              },
+              "message_retention_duration": null,
+              "message_storage_policy": [],
+              "message_transforms": [],
+              "name": "chargebacks",
+              "project": "acme-payments-prod",
+              "schema_settings": [],
+              "terraform_labels": {
+                "goog-terraform-provisioned": "true",
+                "team": "payments"
+              },
+              "timeouts": null
+            }
+          },
+          {
+            "address": "google_pubsub_topic.events[\"refunds\"]",
+            "index": "refunds",
+            "mode": "managed",
+            "name": "events",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 0,
+            "sensitive_values": {
+              "effective_labels": {},
+              "ingestion_data_source_settings": [],
+              "labels": {},
+              "message_storage_policy": [],
+              "message_transforms": [],
+              "schema_settings": [],
+              "terraform_labels": {}
+            },
+            "type": "google_pubsub_topic",
+            "values": {
+              "effective_labels": {
+                "goog-terraform-provisioned": "true",
+                "team": "payments"
+              },
+              "id": "synthetic-google-pubsub-topic-events-refunds",
+              "ingestion_data_source_settings": [],
+              "kms_key_name": null,
+              "labels": {
+                "team": "payments"
+              },
+              "message_retention_duration": null,
+              "message_storage_policy": [],
+              "message_transforms": [],
+              "name": "refunds",
+              "project": "acme-payments-prod",
+              "schema_settings": [],
+              "terraform_labels": {
+                "goog-terraform-provisioned": "true",
+                "team": "payments"
+              },
+              "timeouts": null
+            }
+          },
+          {
+            "address": "google_pubsub_topic.events[\"settlements\"]",
+            "index": "settlements",
+            "mode": "managed",
+            "name": "events",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 0,
+            "sensitive_values": {
+              "effective_labels": {},
+              "ingestion_data_source_settings": [],
+              "labels": {},
+              "message_storage_policy": [],
+              "message_transforms": [],
+              "schema_settings": [],
+              "terraform_labels": {}
+            },
+            "type": "google_pubsub_topic",
+            "values": {
+              "effective_labels": {
+                "goog-terraform-provisioned": "true",
+                "team": "payments"
+              },
+              "id": "synthetic-google-pubsub-topic-events-settlements",
+              "ingestion_data_source_settings": [],
+              "kms_key_name": null,
+              "labels": {
+                "team": "payments"
+              },
+              "message_retention_duration": null,
+              "message_storage_policy": [],
+              "message_transforms": [],
+              "name": "settlements",
+              "project": "acme-payments-prod",
+              "schema_settings": [],
+              "terraform_labels": {
+                "goog-terraform-provisioned": "true",
+                "team": "payments"
+              },
+              "timeouts": null
+            }
+          },
+          {
+            "address": "google_sql_database_instance.ledger",
+            "mode": "managed",
+            "name": "ledger",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 0,
+            "sensitive_values": {
+              "available_maintenance_versions": [],
+              "clone": [],
+              "dns_names": [],
+              "ip_address": [],
+              "replica_configuration": [],
+              "replica_names": [],
+              "replication_cluster": [],
+              "restore_backup_context": [],
+              "root_password": true,
+              "server_ca_cert": true,
+              "settings": [
+                {
+                  "active_directory_config": [],
+                  "advanced_machine_features": [],
+                  "backup_configuration": [],
+                  "connection_pool_config": [],
+                  "data_cache_config": [],
+                  "database_flags": [],
+                  "deny_maintenance_period": [],
+                  "insights_config": [],
+                  "ip_configuration": [],
+                  "location_preference": [],
+                  "maintenance_window": [],
+                  "password_validation_policy": [],
+                  "sql_server_audit_config": []
+                }
+              ]
+            },
+            "type": "google_sql_database_instance",
+            "values": {
+              "available_maintenance_versions": [],
+              "clone": [],
+              "connection_name": "synthetic-google-sql-database-instance-ledger",
+              "database_version": "POSTGRES_16",
+              "deletion_protection": true,
+              "dns_name": "synthetic-google-sql-database-instance-ledger",
+              "dns_names": [],
+              "encryption_key_name": "synthetic-google-sql-database-instance-ledger",
+              "first_ip_address": "synthetic-google-sql-database-instance-ledger",
+              "id": "synthetic-google-sql-database-instance-ledger",
+              "instance_type": "synthetic-google-sql-database-instance-ledger",
+              "ip_address": [],
+              "maintenance_version": "synthetic-google-sql-database-instance-ledger",
+              "master_instance_name": "synthetic-google-sql-database-instance-ledger",
+              "name": "ledger-pg",
+              "node_count": 0,
+              "private_ip_address": "synthetic-google-sql-database-instance-ledger",
+              "project": "acme-payments-prod",
+              "psc_service_attachment_link": "synthetic-google-sql-database-instance-ledger",
+              "public_ip_address": "synthetic-google-sql-database-instance-ledger",
+              "region": "europe-west1",
+              "replica_configuration": [],
+              "replica_names": [],
+              "replication_cluster": [],
+              "restore_backup_context": [],
+              "root_password": null,
+              "self_link": "synthetic-google-sql-database-instance-ledger",
+              "server_ca_cert": [],
+              "service_account_email_address": "synthetic-google-sql-database-instance-ledger",
+              "settings": [
+                {
+                  "activation_policy": "ALWAYS",
+                  "active_directory_config": [],
+                  "advanced_machine_features": [],
+                  "availability_type": "ZONAL",
+                  "backup_configuration": [],
+                  "collation": null,
+                  "connection_pool_config": [],
+                  "connector_enforcement": null,
+                  "data_cache_config": [],
+                  "database_flags": [],
+                  "deletion_protection_enabled": null,
+                  "deny_maintenance_period": [],
+                  "disk_autoresize": true,
+                  "disk_autoresize_limit": 0,
+                  "disk_size": null,
+                  "disk_type": null,
+                  "edition": null,
+                  "effective_availability_type": null,
+                  "enable_dataplex_integration": null,
+                  "enable_google_ml_integration": null,
+                  "insights_config": [],
+                  "ip_configuration": [],
+                  "location_preference": [],
+                  "maintenance_window": [],
+                  "password_validation_policy": [],
+                  "pricing_plan": "PER_USE",
+                  "retain_backups_on_delete": null,
+                  "sql_server_audit_config": [],
+                  "tier": "db-custom-2-7680",
+                  "time_zone": null,
+                  "user_labels": null,
+                  "version": null
+                }
+              ],
+              "timeouts": null
+            }
+          },
+          {
+            "address": "google_storage_bucket.exports",
+            "mode": "managed",
+            "name": "exports",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 3,
+            "sensitive_values": {
+              "autoclass": [],
+              "cors": [],
+              "custom_placement_config": [],
+              "effective_labels": {},
+              "encryption": [],
+              "hierarchical_namespace": [],
+              "ip_filter": [],
+              "lifecycle_rule": [],
+              "logging": [],
+              "retention_policy": [],
+              "soft_delete_policy": [],
+              "terraform_labels": {},
+              "versioning": [],
+              "website": []
+            },
+            "type": "google_storage_bucket",
+            "values": {
+              "autoclass": [],
+              "cors": [],
+              "custom_placement_config": [],
+              "default_event_based_hold": null,
+              "effective_labels": {
+                "goog-terraform-provisioned": "true"
+              },
+              "enable_object_retention": null,
+              "encryption": [],
+              "force_destroy": true,
+              "hierarchical_namespace": [],
+              "id": "synthetic-google-storage-bucket-exports",
+              "ip_filter": [],
+              "labels": null,
+              "lifecycle_rule": [],
+              "location": "EU",
+              "logging": [],
+              "name": "acme-exports-prod",
+              "project": "synthetic-google-storage-bucket-exports",
+              "project_number": 0,
+              "public_access_prevention": "synthetic-google-storage-bucket-exports",
+              "requester_pays": null,
+              "retention_policy": [],
+              "rpo": "synthetic-google-storage-bucket-exports",
+              "self_link": "synthetic-google-storage-bucket-exports",
+              "soft_delete_policy": [],
+              "storage_class": "STANDARD",
+              "terraform_labels": {
+                "goog-terraform-provisioned": "true"
+              },
+              "time_created": "synthetic-google-storage-bucket-exports",
+              "timeouts": null,
+              "uniform_bucket_level_access": false,
+              "updated": "synthetic-google-storage-bucket-exports",
+              "url": "synthetic-google-storage-bucket-exports",
+              "versioning": [],
+              "website": []
+            }
+          },
+          {
+            "address": "google_storage_bucket.reports",
+            "mode": "managed",
+            "name": "reports",
+            "provider_name": "registry.opentofu.org/hashicorp/google",
+            "schema_version": 3,
+            "sensitive_values": {
+              "autoclass": [],
+              "cors": [],
+              "custom_placement_config": [],
+              "effective_labels": {},
+              "encryption": [],
+              "hierarchical_namespace": [],
+              "ip_filter": [],
+              "lifecycle_rule": [],
+              "logging": [],
+              "retention_policy": [],
+              "soft_delete_policy": [],
+              "terraform_labels": {},
+              "versioning": [],
+              "website": []
+            },
+            "type": "google_storage_bucket",
+            "values": {
+              "autoclass": [],
+              "cors": [],
+              "custom_placement_config": [],
+              "default_event_based_hold": null,
+              "effective_labels": {
+                "goog-terraform-provisioned": "true"
+              },
+              "enable_object_retention": null,
+              "encryption": [],
+              "force_destroy": false,
+              "hierarchical_namespace": [],
+              "id": "synthetic-google-storage-bucket-reports",
+              "ip_filter": [],
+              "labels": null,
+              "lifecycle_rule": [],
+              "location": "EU",
+              "logging": [],
+              "name": "acme-reports-prod",
+              "project": "synthetic-google-storage-bucket-reports",
+              "project_number": 0,
+              "public_access_prevention": "synthetic-google-storage-bucket-reports",
+              "requester_pays": null,
+              "retention_policy": [],
+              "rpo": "synthetic-google-storage-bucket-reports",
+              "self_link": "synthetic-google-storage-bucket-reports",
+              "soft_delete_policy": [],
+              "storage_class": "STANDARD",
+              "terraform_labels": {
+                "goog-terraform-provisioned": "true"
+              },
+              "time_created": "synthetic-google-storage-bucket-reports",
+              "timeouts": null,
+              "uniform_bucket_level_access": true,
+              "updated": "synthetic-google-storage-bucket-reports",
+              "url": "synthetic-google-storage-bucket-reports",
+              "versioning": [],
+              "website": []
+            }
+          }
+        ]
+      }
+    }
+  },
+  "relevant_attributes": [
+    {
+      "attribute": [
+        "name"
+      ],
+      "resource": "google_storage_bucket.reports"
+    }
+  ],
+  "resource_changes": [
+    {
+      "address": "google_compute_address.partner_sftp",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "address_type": "EXTERNAL",
+          "description": null,
+          "effective_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "ip_version": null,
+          "ipv6_endpoint_type": null,
+          "labels": null,
+          "name": "partner-sftp",
+          "network": null,
+          "project": "acme-payments-prod",
+          "region": "europe-west1",
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "timeouts": null
+        },
+        "after_sensitive": {
+          "effective_labels": {},
+          "terraform_labels": {},
+          "users": []
+        },
+        "after_unknown": {
+          "address": true,
+          "creation_timestamp": true,
+          "effective_labels": {},
+          "id": true,
+          "label_fingerprint": true,
+          "network_tier": true,
+          "prefix_length": true,
+          "purpose": true,
+          "self_link": true,
+          "subnetwork": true,
+          "terraform_labels": {},
+          "users": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "partner_sftp",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_compute_address"
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "google_compute_disk.cache",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "architecture": null,
+          "async_primary_disk": [],
+          "create_snapshot_before_destroy": false,
+          "create_snapshot_before_destroy_prefix": null,
+          "description": null,
+          "disk_encryption_key": [],
+          "effective_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "image": null,
+          "labels": null,
+          "name": "settlement-cache",
+          "params": [],
+          "project": "acme-payments-prod",
+          "size": 200,
+          "snapshot": null,
+          "source_disk": null,
+          "source_image_encryption_key": [],
+          "source_instant_snapshot": null,
+          "source_snapshot_encryption_key": [],
+          "source_storage_object": null,
+          "storage_pool": null,
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "timeouts": null,
+          "type": "pd-ssd",
+          "zone": "europe-west1-b"
+        },
+        "after_sensitive": {
+          "async_primary_disk": [],
+          "disk_encryption_key": [],
+          "effective_labels": {},
+          "guest_os_features": [],
+          "licenses": [],
+          "params": [],
+          "source_image_encryption_key": [],
+          "source_snapshot_encryption_key": [],
+          "terraform_labels": {},
+          "users": []
+        },
+        "after_unknown": {
+          "access_mode": true,
+          "async_primary_disk": [],
+          "creation_timestamp": true,
+          "disk_encryption_key": [],
+          "disk_id": true,
+          "effective_labels": {},
+          "enable_confidential_compute": true,
+          "guest_os_features": true,
+          "id": true,
+          "label_fingerprint": true,
+          "last_attach_timestamp": true,
+          "last_detach_timestamp": true,
+          "licenses": true,
+          "params": [],
+          "physical_block_size_bytes": true,
+          "provisioned_iops": true,
+          "provisioned_throughput": true,
+          "self_link": true,
+          "source_disk_id": true,
+          "source_image_encryption_key": [],
+          "source_image_id": true,
+          "source_instant_snapshot_id": true,
+          "source_snapshot_encryption_key": [],
+          "source_snapshot_id": true,
+          "terraform_labels": {},
+          "users": true
+        },
+        "before": {
+          "access_mode": "synthetic-google-compute-disk-cache",
+          "architecture": null,
+          "async_primary_disk": [],
+          "create_snapshot_before_destroy": false,
+          "create_snapshot_before_destroy_prefix": null,
+          "creation_timestamp": "synthetic-google-compute-disk-cache",
+          "description": null,
+          "disk_encryption_key": [],
+          "disk_id": "synthetic-google-compute-disk-cache",
+          "effective_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "enable_confidential_compute": false,
+          "guest_os_features": [],
+          "id": "synthetic-google-compute-disk-cache",
+          "image": null,
+          "label_fingerprint": "synthetic-google-compute-disk-cache",
+          "labels": null,
+          "last_attach_timestamp": "synthetic-google-compute-disk-cache",
+          "last_detach_timestamp": "synthetic-google-compute-disk-cache",
+          "licenses": [],
+          "name": "settlement-cache",
+          "params": [],
+          "physical_block_size_bytes": 0,
+          "project": "acme-payments-prod",
+          "provisioned_iops": 0,
+          "provisioned_throughput": 0,
+          "self_link": "synthetic-google-compute-disk-cache",
+          "size": 200,
+          "snapshot": null,
+          "source_disk": null,
+          "source_disk_id": "synthetic-google-compute-disk-cache",
+          "source_image_encryption_key": [],
+          "source_image_id": "synthetic-google-compute-disk-cache",
+          "source_instant_snapshot": null,
+          "source_instant_snapshot_id": "synthetic-google-compute-disk-cache",
+          "source_snapshot_encryption_key": [],
+          "source_snapshot_id": "synthetic-google-compute-disk-cache",
+          "source_storage_object": null,
+          "storage_pool": null,
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "timeouts": null,
+          "type": "pd-standard",
+          "users": [],
+          "zone": "europe-west1-b"
+        },
+        "before_sensitive": {
+          "async_primary_disk": [],
+          "disk_encryption_key": [],
+          "effective_labels": {},
+          "guest_os_features": [],
+          "licenses": [],
+          "params": [],
+          "source_image_encryption_key": [],
+          "source_snapshot_encryption_key": [],
+          "terraform_labels": {},
+          "users": []
+        },
+        "replace_paths": [
+          [
+            "type"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "name": "cache",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_compute_disk"
+    },
+    {
+      "address": "google_compute_firewall.internal",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "after": {
+          "allow": [
+            {
+              "ports": [
+                "0-65535"
+              ],
+              "protocol": "tcp"
+            }
+          ],
+          "creation_timestamp": "synthetic-google-compute-firewall-internal",
+          "deny": [],
+          "description": null,
+          "destination_ranges": [],
+          "direction": "synthetic-google-compute-firewall-internal",
+          "disabled": null,
+          "enable_logging": false,
+          "id": "synthetic-google-compute-firewall-internal",
+          "log_config": [],
+          "name": "allow-internal",
+          "network": "default",
+          "params": [],
+          "priority": 1000,
+          "project": "acme-payments-prod",
+          "self_link": "synthetic-google-compute-firewall-internal",
+          "source_ranges": [
+            "10.128.0.0/9"
+          ],
+          "source_service_accounts": null,
+          "source_tags": null,
+          "target_service_accounts": null,
+          "target_tags": null,
+          "timeouts": null
+        },
+        "after_sensitive": {
+          "allow": [
+            {
+              "ports": [
+                false
+              ]
+            }
+          ],
+          "deny": [],
+          "destination_ranges": [],
+          "log_config": [],
+          "params": [],
+          "source_ranges": [
+            false
+          ]
+        },
+        "after_unknown": {},
+        "before": {
+          "allow": [
+            {
+              "ports": [
+                "0-65535"
+              ],
+              "protocol": "tcp"
+            }
+          ],
+          "creation_timestamp": "synthetic-google-compute-firewall-internal",
+          "deny": [],
+          "description": null,
+          "destination_ranges": [],
+          "direction": "synthetic-google-compute-firewall-internal",
+          "disabled": null,
+          "enable_logging": false,
+          "id": "synthetic-google-compute-firewall-internal",
+          "log_config": [],
+          "name": "allow-internal",
+          "network": "default",
+          "params": [],
+          "priority": 1000,
+          "project": "acme-payments-prod",
+          "self_link": "synthetic-google-compute-firewall-internal",
+          "source_ranges": [
+            "10.128.0.0/9"
+          ],
+          "source_service_accounts": null,
+          "source_tags": null,
+          "target_service_accounts": null,
+          "target_tags": null,
+          "timeouts": null
+        },
+        "before_sensitive": {
+          "allow": [
+            {
+              "ports": [
+                false
+              ]
+            }
+          ],
+          "deny": [],
+          "destination_ranges": [],
+          "log_config": [],
+          "params": [],
+          "source_ranges": [
+            false
+          ]
+        }
+      },
+      "mode": "managed",
+      "name": "internal",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_compute_firewall"
+    },
+    {
+      "address": "google_compute_firewall.ssh_iap_debug",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "allow": [
+            {
+              "ports": [
+                "22"
+              ],
+              "protocol": "tcp"
+            }
+          ],
+          "deny": [],
+          "description": null,
+          "disabled": null,
+          "log_config": [],
+          "name": "allow-ssh-debug",
+          "network": "default",
+          "params": [],
+          "priority": 1000,
+          "project": "acme-payments-prod",
+          "source_ranges": [
+            "0.0.0.0/0"
+          ],
+          "source_service_accounts": null,
+          "source_tags": null,
+          "target_service_accounts": null,
+          "target_tags": null,
+          "timeouts": null
+        },
+        "after_sensitive": {
+          "allow": [
+            {
+              "ports": [
+                false
+              ]
+            }
+          ],
+          "deny": [],
+          "destination_ranges": [],
+          "log_config": [],
+          "params": [],
+          "source_ranges": [
+            false
+          ]
+        },
+        "after_unknown": {
+          "allow": [
+            {
+              "ports": [
+                false
+              ]
+            }
+          ],
+          "creation_timestamp": true,
+          "deny": [],
+          "destination_ranges": true,
+          "direction": true,
+          "enable_logging": true,
+          "id": true,
+          "log_config": [],
+          "params": [],
+          "self_link": true,
+          "source_ranges": [
+            false
+          ]
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "ssh_iap_debug",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_compute_firewall"
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "address": "google_kms_crypto_key.card_vault",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_sensitive": false,
+        "after_unknown": {},
+        "before": {
+          "crypto_key_backend": "synthetic-google-kms-crypto-key-card-vault",
+          "destroy_scheduled_duration": "synthetic-google-kms-crypto-key-card-vault",
+          "effective_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "id": "synthetic-google-kms-crypto-key-card-vault",
+          "import_only": false,
+          "key_ring": "synthetic-google-kms-key-ring-payments",
+          "labels": null,
+          "name": "card-vault",
+          "primary": [],
+          "purpose": "ENCRYPT_DECRYPT",
+          "rotation_period": null,
+          "skip_initial_version_creation": null,
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "timeouts": null,
+          "version_template": []
+        },
+        "before_sensitive": {
+          "effective_labels": {},
+          "primary": [],
+          "terraform_labels": {},
+          "version_template": []
+        }
+      },
+      "mode": "managed",
+      "name": "card_vault",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_kms_crypto_key"
+    },
+    {
+      "address": "google_kms_key_ring.payments",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "after": {
+          "id": "synthetic-google-kms-key-ring-payments",
+          "location": "europe-west1",
+          "name": "payments",
+          "project": "acme-payments-prod",
+          "timeouts": null
+        },
+        "after_sensitive": {},
+        "after_unknown": {},
+        "before": {
+          "id": "synthetic-google-kms-key-ring-payments",
+          "location": "europe-west1",
+          "name": "payments",
+          "project": "acme-payments-prod",
+          "timeouts": null
+        },
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "payments",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_kms_key_ring"
+    },
+    {
+      "address": "google_project_iam_member.ci_owner",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "condition": [],
+          "member": "serviceAccount:ci-deployer@acme-payments-prod.iam.gserviceaccount.com",
+          "project": "acme-payments-prod",
+          "role": "roles/owner"
+        },
+        "after_sensitive": {
+          "condition": []
+        },
+        "after_unknown": {
+          "condition": [],
+          "etag": true,
+          "id": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "ci_owner",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_project_iam_member"
+    },
+    {
+      "address": "google_pubsub_topic.events[\"chargebacks\"]",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "effective_labels": {
+            "env": "prod",
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "id": "synthetic-google-pubsub-topic-events-chargebacks",
+          "ingestion_data_source_settings": [],
+          "kms_key_name": null,
+          "labels": {
+            "env": "prod",
+            "team": "payments"
+          },
+          "message_retention_duration": null,
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "name": "chargebacks",
+          "project": "acme-payments-prod",
+          "schema_settings": [],
+          "terraform_labels": {
+            "env": "prod",
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "timeouts": null
+        },
+        "after_sensitive": {
+          "effective_labels": {},
+          "ingestion_data_source_settings": [],
+          "labels": {},
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "schema_settings": [],
+          "terraform_labels": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "effective_labels": {
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "id": "synthetic-google-pubsub-topic-events-chargebacks",
+          "ingestion_data_source_settings": [],
+          "kms_key_name": null,
+          "labels": {
+            "team": "payments"
+          },
+          "message_retention_duration": null,
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "name": "chargebacks",
+          "project": "acme-payments-prod",
+          "schema_settings": [],
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "timeouts": null
+        },
+        "before_sensitive": {
+          "effective_labels": {},
+          "ingestion_data_source_settings": [],
+          "labels": {},
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "schema_settings": [],
+          "terraform_labels": {}
+        }
+      },
+      "index": "chargebacks",
+      "mode": "managed",
+      "name": "events",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_pubsub_topic"
+    },
+    {
+      "address": "google_pubsub_topic.events[\"refunds\"]",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "effective_labels": {
+            "env": "prod",
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "id": "synthetic-google-pubsub-topic-events-refunds",
+          "ingestion_data_source_settings": [],
+          "kms_key_name": null,
+          "labels": {
+            "env": "prod",
+            "team": "payments"
+          },
+          "message_retention_duration": null,
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "name": "refunds",
+          "project": "acme-payments-prod",
+          "schema_settings": [],
+          "terraform_labels": {
+            "env": "prod",
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "timeouts": null
+        },
+        "after_sensitive": {
+          "effective_labels": {},
+          "ingestion_data_source_settings": [],
+          "labels": {},
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "schema_settings": [],
+          "terraform_labels": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "effective_labels": {
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "id": "synthetic-google-pubsub-topic-events-refunds",
+          "ingestion_data_source_settings": [],
+          "kms_key_name": null,
+          "labels": {
+            "team": "payments"
+          },
+          "message_retention_duration": null,
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "name": "refunds",
+          "project": "acme-payments-prod",
+          "schema_settings": [],
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "timeouts": null
+        },
+        "before_sensitive": {
+          "effective_labels": {},
+          "ingestion_data_source_settings": [],
+          "labels": {},
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "schema_settings": [],
+          "terraform_labels": {}
+        }
+      },
+      "index": "refunds",
+      "mode": "managed",
+      "name": "events",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_pubsub_topic"
+    },
+    {
+      "address": "google_pubsub_topic.events[\"settlements\"]",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "effective_labels": {
+            "env": "prod",
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "id": "synthetic-google-pubsub-topic-events-settlements",
+          "ingestion_data_source_settings": [],
+          "kms_key_name": null,
+          "labels": {
+            "env": "prod",
+            "team": "payments"
+          },
+          "message_retention_duration": null,
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "name": "settlements",
+          "project": "acme-payments-prod",
+          "schema_settings": [],
+          "terraform_labels": {
+            "env": "prod",
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "timeouts": null
+        },
+        "after_sensitive": {
+          "effective_labels": {},
+          "ingestion_data_source_settings": [],
+          "labels": {},
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "schema_settings": [],
+          "terraform_labels": {}
+        },
+        "after_unknown": {},
+        "before": {
+          "effective_labels": {
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "id": "synthetic-google-pubsub-topic-events-settlements",
+          "ingestion_data_source_settings": [],
+          "kms_key_name": null,
+          "labels": {
+            "team": "payments"
+          },
+          "message_retention_duration": null,
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "name": "settlements",
+          "project": "acme-payments-prod",
+          "schema_settings": [],
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true",
+            "team": "payments"
+          },
+          "timeouts": null
+        },
+        "before_sensitive": {
+          "effective_labels": {},
+          "ingestion_data_source_settings": [],
+          "labels": {},
+          "message_storage_policy": [],
+          "message_transforms": [],
+          "schema_settings": [],
+          "terraform_labels": {}
+        }
+      },
+      "index": "settlements",
+      "mode": "managed",
+      "name": "events",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_pubsub_topic"
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "google_sql_database_instance.ledger",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "clone": [],
+          "database_version": "POSTGRES_16",
+          "deletion_protection": false,
+          "name": "ledger-pg",
+          "project": "acme-payments-prod",
+          "region": "europe-west2",
+          "restore_backup_context": [],
+          "root_password": null,
+          "settings": [
+            {
+              "activation_policy": "ALWAYS",
+              "active_directory_config": [],
+              "advanced_machine_features": [],
+              "availability_type": "ZONAL",
+              "collation": null,
+              "database_flags": [],
+              "deletion_protection_enabled": null,
+              "deny_maintenance_period": [],
+              "disk_autoresize": true,
+              "disk_autoresize_limit": 0,
+              "enable_dataplex_integration": null,
+              "enable_google_ml_integration": null,
+              "maintenance_window": [],
+              "password_validation_policy": [],
+              "pricing_plan": "PER_USE",
+              "retain_backups_on_delete": null,
+              "sql_server_audit_config": [],
+              "tier": "db-custom-2-7680",
+              "time_zone": null
+            }
+          ],
+          "timeouts": null
+        },
+        "after_sensitive": {
+          "available_maintenance_versions": [],
+          "clone": [],
+          "dns_names": [],
+          "ip_address": [],
+          "replica_configuration": [],
+          "replica_names": [],
+          "replication_cluster": [],
+          "restore_backup_context": [],
+          "root_password": true,
+          "server_ca_cert": true,
+          "settings": [
+            {
+              "active_directory_config": [],
+              "advanced_machine_features": [],
+              "backup_configuration": [],
+              "connection_pool_config": [],
+              "data_cache_config": [],
+              "database_flags": [],
+              "deny_maintenance_period": [],
+              "insights_config": [],
+              "ip_configuration": [],
+              "location_preference": [],
+              "maintenance_window": [],
+              "password_validation_policy": [],
+              "sql_server_audit_config": [],
+              "user_labels": {}
+            }
+          ]
+        },
+        "after_unknown": {
+          "available_maintenance_versions": true,
+          "clone": [],
+          "connection_name": true,
+          "dns_name": true,
+          "dns_names": true,
+          "encryption_key_name": true,
+          "first_ip_address": true,
+          "id": true,
+          "instance_type": true,
+          "ip_address": true,
+          "maintenance_version": true,
+          "master_instance_name": true,
+          "node_count": true,
+          "private_ip_address": true,
+          "psc_service_attachment_link": true,
+          "public_ip_address": true,
+          "replica_configuration": true,
+          "replica_names": true,
+          "replication_cluster": true,
+          "restore_backup_context": [],
+          "self_link": true,
+          "server_ca_cert": true,
+          "service_account_email_address": true,
+          "settings": [
+            {
+              "active_directory_config": [],
+              "advanced_machine_features": [],
+              "backup_configuration": true,
+              "connection_pool_config": true,
+              "connector_enforcement": true,
+              "data_cache_config": true,
+              "database_flags": [],
+              "deny_maintenance_period": [],
+              "disk_size": true,
+              "disk_type": true,
+              "edition": true,
+              "effective_availability_type": true,
+              "insights_config": true,
+              "ip_configuration": true,
+              "location_preference": true,
+              "maintenance_window": [],
+              "password_validation_policy": [],
+              "sql_server_audit_config": [],
+              "user_labels": true,
+              "version": true
+            }
+          ]
+        },
+        "before": {
+          "available_maintenance_versions": [],
+          "clone": [],
+          "connection_name": "synthetic-google-sql-database-instance-ledger",
+          "database_version": "POSTGRES_16",
+          "deletion_protection": true,
+          "dns_name": "synthetic-google-sql-database-instance-ledger",
+          "dns_names": [],
+          "encryption_key_name": "synthetic-google-sql-database-instance-ledger",
+          "first_ip_address": "synthetic-google-sql-database-instance-ledger",
+          "id": "synthetic-google-sql-database-instance-ledger",
+          "instance_type": "synthetic-google-sql-database-instance-ledger",
+          "ip_address": [],
+          "maintenance_version": "synthetic-google-sql-database-instance-ledger",
+          "master_instance_name": "synthetic-google-sql-database-instance-ledger",
+          "name": "ledger-pg",
+          "node_count": 0,
+          "private_ip_address": "synthetic-google-sql-database-instance-ledger",
+          "project": "acme-payments-prod",
+          "psc_service_attachment_link": "synthetic-google-sql-database-instance-ledger",
+          "public_ip_address": "synthetic-google-sql-database-instance-ledger",
+          "region": "europe-west1",
+          "replica_configuration": [],
+          "replica_names": [],
+          "replication_cluster": [],
+          "restore_backup_context": [],
+          "root_password": null,
+          "self_link": "synthetic-google-sql-database-instance-ledger",
+          "server_ca_cert": [],
+          "service_account_email_address": "synthetic-google-sql-database-instance-ledger",
+          "settings": [
+            {
+              "activation_policy": "ALWAYS",
+              "active_directory_config": [],
+              "advanced_machine_features": [],
+              "availability_type": "ZONAL",
+              "backup_configuration": [],
+              "collation": null,
+              "connection_pool_config": [],
+              "connector_enforcement": null,
+              "data_cache_config": [],
+              "database_flags": [],
+              "deletion_protection_enabled": null,
+              "deny_maintenance_period": [],
+              "disk_autoresize": true,
+              "disk_autoresize_limit": 0,
+              "disk_size": null,
+              "disk_type": null,
+              "edition": null,
+              "effective_availability_type": null,
+              "enable_dataplex_integration": null,
+              "enable_google_ml_integration": null,
+              "insights_config": [],
+              "ip_configuration": [],
+              "location_preference": [],
+              "maintenance_window": [],
+              "password_validation_policy": [],
+              "pricing_plan": "PER_USE",
+              "retain_backups_on_delete": null,
+              "sql_server_audit_config": [],
+              "tier": "db-custom-2-7680",
+              "time_zone": null,
+              "user_labels": null,
+              "version": null
+            }
+          ],
+          "timeouts": null
+        },
+        "before_sensitive": {
+          "available_maintenance_versions": [],
+          "clone": [],
+          "dns_names": [],
+          "ip_address": [],
+          "replica_configuration": [],
+          "replica_names": [],
+          "replication_cluster": [],
+          "restore_backup_context": [],
+          "root_password": true,
+          "server_ca_cert": true,
+          "settings": [
+            {
+              "active_directory_config": [],
+              "advanced_machine_features": [],
+              "backup_configuration": [],
+              "connection_pool_config": [],
+              "data_cache_config": [],
+              "database_flags": [],
+              "deny_maintenance_period": [],
+              "insights_config": [],
+              "ip_configuration": [],
+              "location_preference": [],
+              "maintenance_window": [],
+              "password_validation_policy": [],
+              "sql_server_audit_config": []
+            }
+          ]
+        },
+        "replace_paths": [
+          [
+            "region"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "name": "ledger",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_sql_database_instance"
+    },
+    {
+      "action_reason": "delete_because_no_resource_config",
+      "address": "google_storage_bucket.exports",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_sensitive": false,
+        "after_unknown": {},
+        "before": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "default_event_based_hold": null,
+          "effective_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "enable_object_retention": null,
+          "encryption": [],
+          "force_destroy": true,
+          "hierarchical_namespace": [],
+          "id": "synthetic-google-storage-bucket-exports",
+          "ip_filter": [],
+          "labels": null,
+          "lifecycle_rule": [],
+          "location": "EU",
+          "logging": [],
+          "name": "acme-exports-prod",
+          "project": "synthetic-google-storage-bucket-exports",
+          "project_number": 0,
+          "public_access_prevention": "synthetic-google-storage-bucket-exports",
+          "requester_pays": null,
+          "retention_policy": [],
+          "rpo": "synthetic-google-storage-bucket-exports",
+          "self_link": "synthetic-google-storage-bucket-exports",
+          "soft_delete_policy": [],
+          "storage_class": "STANDARD",
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "time_created": "synthetic-google-storage-bucket-exports",
+          "timeouts": null,
+          "uniform_bucket_level_access": false,
+          "updated": "synthetic-google-storage-bucket-exports",
+          "url": "synthetic-google-storage-bucket-exports",
+          "versioning": [],
+          "website": []
+        },
+        "before_sensitive": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "effective_labels": {},
+          "encryption": [],
+          "hierarchical_namespace": [],
+          "ip_filter": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "retention_policy": [],
+          "soft_delete_policy": [],
+          "terraform_labels": {},
+          "versioning": [],
+          "website": []
+        }
+      },
+      "mode": "managed",
+      "name": "exports",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_storage_bucket"
+    },
+    {
+      "address": "google_storage_bucket.reports",
+      "change": {
+        "actions": [
+          "no-op"
+        ],
+        "after": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "default_event_based_hold": null,
+          "effective_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "enable_object_retention": null,
+          "encryption": [],
+          "force_destroy": false,
+          "hierarchical_namespace": [],
+          "id": "synthetic-google-storage-bucket-reports",
+          "ip_filter": [],
+          "labels": null,
+          "lifecycle_rule": [],
+          "location": "EU",
+          "logging": [],
+          "name": "acme-reports-prod",
+          "project": "synthetic-google-storage-bucket-reports",
+          "project_number": 0,
+          "public_access_prevention": "synthetic-google-storage-bucket-reports",
+          "requester_pays": null,
+          "retention_policy": [],
+          "rpo": "synthetic-google-storage-bucket-reports",
+          "self_link": "synthetic-google-storage-bucket-reports",
+          "soft_delete_policy": [],
+          "storage_class": "STANDARD",
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "time_created": "synthetic-google-storage-bucket-reports",
+          "timeouts": null,
+          "uniform_bucket_level_access": true,
+          "updated": "synthetic-google-storage-bucket-reports",
+          "url": "synthetic-google-storage-bucket-reports",
+          "versioning": [],
+          "website": []
+        },
+        "after_sensitive": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "effective_labels": {},
+          "encryption": [],
+          "hierarchical_namespace": [],
+          "ip_filter": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "retention_policy": [],
+          "soft_delete_policy": [],
+          "terraform_labels": {},
+          "versioning": [],
+          "website": []
+        },
+        "after_unknown": {},
+        "before": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "default_event_based_hold": null,
+          "effective_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "enable_object_retention": null,
+          "encryption": [],
+          "force_destroy": false,
+          "hierarchical_namespace": [],
+          "id": "synthetic-google-storage-bucket-reports",
+          "ip_filter": [],
+          "labels": null,
+          "lifecycle_rule": [],
+          "location": "EU",
+          "logging": [],
+          "name": "acme-reports-prod",
+          "project": "synthetic-google-storage-bucket-reports",
+          "project_number": 0,
+          "public_access_prevention": "synthetic-google-storage-bucket-reports",
+          "requester_pays": null,
+          "retention_policy": [],
+          "rpo": "synthetic-google-storage-bucket-reports",
+          "self_link": "synthetic-google-storage-bucket-reports",
+          "soft_delete_policy": [],
+          "storage_class": "STANDARD",
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "time_created": "synthetic-google-storage-bucket-reports",
+          "timeouts": null,
+          "uniform_bucket_level_access": true,
+          "updated": "synthetic-google-storage-bucket-reports",
+          "url": "synthetic-google-storage-bucket-reports",
+          "versioning": [],
+          "website": []
+        },
+        "before_sensitive": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "effective_labels": {},
+          "encryption": [],
+          "hierarchical_namespace": [],
+          "ip_filter": [],
+          "lifecycle_rule": [],
+          "logging": [],
+          "retention_policy": [],
+          "soft_delete_policy": [],
+          "terraform_labels": {},
+          "versioning": [],
+          "website": []
+        }
+      },
+      "mode": "managed",
+      "name": "reports",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_storage_bucket"
+    },
+    {
+      "address": "google_storage_bucket_iam_member.reports_partner",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "bucket": "acme-reports-prod",
+          "condition": [],
+          "member": "allUsers",
+          "role": "roles/storage.objectViewer"
+        },
+        "after_sensitive": {
+          "condition": []
+        },
+        "after_unknown": {
+          "condition": [],
+          "etag": true,
+          "id": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "reports_partner",
+      "provider_name": "registry.opentofu.org/hashicorp/google",
+      "type": "google_storage_bucket_iam_member"
+    }
+  ],
+  "terraform_version": "1.13.1",
+  "timestamp": "2026-10-10T19:05:38Z"
+}

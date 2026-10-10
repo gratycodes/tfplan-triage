@@ -1,0 +1,501 @@
+{
+  "applyable": true,
+  "complete": true,
+  "configuration": {
+    "provider_config": {
+      "local": {
+        "full_name": "registry.terraform.io/hashicorp/local",
+        "name": "local",
+        "version_constraint": "2.5.3"
+      },
+      "random": {
+        "full_name": "registry.terraform.io/hashicorp/random",
+        "name": "random",
+        "version_constraint": "3.7.2"
+      },
+      "terraform": {
+        "full_name": "terraform.io/builtin/terraform",
+        "name": "terraform"
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "local_file.feature_flags",
+          "expressions": {
+            "content": {},
+            "filename": {
+              "references": [
+                "path.module"
+              ]
+            }
+          },
+          "mode": "managed",
+          "name": "feature_flags",
+          "provider_config_key": "local",
+          "schema_version": 0,
+          "type": "local_file"
+        },
+        {
+          "address": "local_file.routing",
+          "expressions": {
+            "content": {
+              "constant_value": "primary: eu-central-1\n"
+            },
+            "filename": {
+              "references": [
+                "path.module"
+              ]
+            }
+          },
+          "mode": "managed",
+          "name": "routing",
+          "provider_config_key": "local",
+          "schema_version": 0,
+          "type": "local_file"
+        },
+        {
+          "address": "random_password.webhook_secret",
+          "expressions": {
+            "keepers": {
+              "constant_value": {
+                "rotation": "2026-q4"
+              }
+            },
+            "length": {
+              "constant_value": 32
+            },
+            "special": {
+              "constant_value": false
+            }
+          },
+          "mode": "managed",
+          "name": "webhook_secret",
+          "provider_config_key": "random",
+          "schema_version": 3,
+          "type": "random_password"
+        },
+        {
+          "address": "terraform_data.release",
+          "expressions": {
+            "input": {
+              "constant_value": "v42"
+            }
+          },
+          "mode": "managed",
+          "name": "release",
+          "provider_config_key": "terraform",
+          "schema_version": 0,
+          "type": "terraform_data"
+        }
+      ]
+    }
+  },
+  "errored": false,
+  "format_version": "1.2",
+  "planned_values": {
+    "root_module": {
+      "resources": [
+        {
+          "address": "local_file.feature_flags",
+          "mode": "managed",
+          "name": "feature_flags",
+          "provider_name": "registry.terraform.io/hashicorp/local",
+          "schema_version": 0,
+          "sensitive_values": {
+            "sensitive_content": true
+          },
+          "type": "local_file",
+          "values": {
+            "content": "{\"instant_payouts\":false}",
+            "content_base64": null,
+            "directory_permission": "0777",
+            "file_permission": "0777",
+            "filename": "./out/feature-flags.json",
+            "sensitive_content": null,
+            "source": null
+          }
+        },
+        {
+          "address": "local_file.routing",
+          "mode": "managed",
+          "name": "routing",
+          "provider_name": "registry.terraform.io/hashicorp/local",
+          "schema_version": 0,
+          "sensitive_values": {},
+          "type": "local_file",
+          "values": {
+            "content": "primary: eu-central-1\n",
+            "content_base64": null,
+            "directory_permission": "0777",
+            "file_permission": "0777",
+            "filename": "./out/routing.yaml",
+            "sensitive_content": null,
+            "source": null
+          }
+        },
+        {
+          "address": "random_password.webhook_secret",
+          "mode": "managed",
+          "name": "webhook_secret",
+          "provider_name": "registry.terraform.io/hashicorp/random",
+          "schema_version": 3,
+          "sensitive_values": {
+            "keepers": {}
+          },
+          "type": "random_password",
+          "values": {
+            "keepers": {
+              "rotation": "2026-q4"
+            },
+            "length": 32,
+            "lower": true,
+            "min_lower": 0,
+            "min_numeric": 0,
+            "min_special": 0,
+            "min_upper": 0,
+            "number": true,
+            "numeric": true,
+            "override_special": null,
+            "special": false,
+            "upper": true
+          }
+        },
+        {
+          "address": "terraform_data.release",
+          "mode": "managed",
+          "name": "release",
+          "provider_name": "terraform.io/builtin/terraform",
+          "schema_version": 0,
+          "sensitive_values": {},
+          "type": "terraform_data",
+          "values": {
+            "id": "84e12fde-d262-e700-4788-6065fd950f0a",
+            "input": "v42",
+            "store": null,
+            "triggers_replace": null
+          }
+        }
+      ]
+    }
+  },
+  "prior_state": {
+    "format_version": "1.0",
+    "terraform_version": "1.16.5",
+    "values": {
+      "root_module": {
+        "resources": [
+          {
+            "address": "local_file.routing",
+            "mode": "managed",
+            "name": "routing",
+            "provider_name": "registry.terraform.io/hashicorp/local",
+            "schema_version": 0,
+            "sensitive_values": {
+              "sensitive_content": true
+            },
+            "type": "local_file",
+            "values": {
+              "content": "primary: eu-west-1\n",
+              "content_base64": null,
+              "content_base64sha256": "GiASTKHRzU3NYQBKkAKdsVzQIugIK/7WSymlPl4xr3c=",
+              "content_base64sha512": "ya+lan+IAKnmb9BZoLLVULdsscn1VxOZ1W6nP+lH7Etinw5Er+NgEDzfetM8IfQoyLiWoSxIPDBe3Kg0Sy0kYg==",
+              "content_md5": "a7c5d9cdc46471938ecd91443584a877",
+              "content_sha1": "8531d43496244152ddecd7681e8ad68430748702",
+              "content_sha256": "1a20124ca1d1cd4dcd61004a90029db15cd022e8082bfed64b29a53e5e31af77",
+              "content_sha512": "c9afa56a7f8800a9e66fd059a0b2d550b76cb1c9f5571399d56ea73fe947ec4b629f0e44afe360103cdf7ad33c21f428c8b896a12c483c305edca8344b2d2462",
+              "directory_permission": "0777",
+              "file_permission": "0777",
+              "filename": "./out/routing.yaml",
+              "id": "8531d43496244152ddecd7681e8ad68430748702",
+              "sensitive_content": null,
+              "source": null
+            }
+          },
+          {
+            "address": "random_password.webhook_secret",
+            "mode": "managed",
+            "name": "webhook_secret",
+            "provider_name": "registry.terraform.io/hashicorp/random",
+            "schema_version": 3,
+            "sensitive_values": {
+              "bcrypt_hash": true,
+              "keepers": {},
+              "result": true
+            },
+            "type": "random_password",
+            "values": {
+              "bcrypt_hash": "$2a$10$C2ljwRHgElMvYeHN3Sjm9e9o1z2t9laMVVb4.y.whkTfA6wp1gaki",
+              "id": "none",
+              "keepers": {
+                "rotation": "2026-q3"
+              },
+              "length": 32,
+              "lower": true,
+              "min_lower": 0,
+              "min_numeric": 0,
+              "min_special": 0,
+              "min_upper": 0,
+              "number": true,
+              "numeric": true,
+              "override_special": null,
+              "result": "6416Sj1v6Sy63rJ5Qs1r5TQHO1OUHfpg",
+              "special": false,
+              "upper": true
+            }
+          },
+          {
+            "address": "terraform_data.release",
+            "mode": "managed",
+            "name": "release",
+            "provider_name": "terraform.io/builtin/terraform",
+            "schema_version": 0,
+            "sensitive_values": {},
+            "type": "terraform_data",
+            "values": {
+              "id": "84e12fde-d262-e700-4788-6065fd950f0a",
+              "input": "v41",
+              "output": "v41",
+              "store": null,
+              "triggers_replace": null
+            }
+          }
+        ]
+      }
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "local_file.feature_flags",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "after": {
+          "content": "{\"instant_payouts\":false}",
+          "content_base64": null,
+          "directory_permission": "0777",
+          "file_permission": "0777",
+          "filename": "./out/feature-flags.json",
+          "sensitive_content": null,
+          "source": null
+        },
+        "after_sensitive": {
+          "sensitive_content": true
+        },
+        "after_unknown": {
+          "content_base64sha256": true,
+          "content_base64sha512": true,
+          "content_md5": true,
+          "content_sha1": true,
+          "content_sha256": true,
+          "content_sha512": true,
+          "id": true
+        },
+        "before": null,
+        "before_sensitive": false
+      },
+      "mode": "managed",
+      "name": "feature_flags",
+      "provider_name": "registry.terraform.io/hashicorp/local",
+      "type": "local_file"
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "local_file.routing",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "content": "primary: eu-central-1\n",
+          "content_base64": null,
+          "directory_permission": "0777",
+          "file_permission": "0777",
+          "filename": "./out/routing.yaml",
+          "sensitive_content": null,
+          "source": null
+        },
+        "after_sensitive": {
+          "sensitive_content": true
+        },
+        "after_unknown": {
+          "content_base64sha256": true,
+          "content_base64sha512": true,
+          "content_md5": true,
+          "content_sha1": true,
+          "content_sha256": true,
+          "content_sha512": true,
+          "id": true
+        },
+        "before": {
+          "content": "primary: eu-west-1\n",
+          "content_base64": null,
+          "content_base64sha256": "GiASTKHRzU3NYQBKkAKdsVzQIugIK/7WSymlPl4xr3c=",
+          "content_base64sha512": "ya+lan+IAKnmb9BZoLLVULdsscn1VxOZ1W6nP+lH7Etinw5Er+NgEDzfetM8IfQoyLiWoSxIPDBe3Kg0Sy0kYg==",
+          "content_md5": "a7c5d9cdc46471938ecd91443584a877",
+          "content_sha1": "8531d43496244152ddecd7681e8ad68430748702",
+          "content_sha256": "1a20124ca1d1cd4dcd61004a90029db15cd022e8082bfed64b29a53e5e31af77",
+          "content_sha512": "c9afa56a7f8800a9e66fd059a0b2d550b76cb1c9f5571399d56ea73fe947ec4b629f0e44afe360103cdf7ad33c21f428c8b896a12c483c305edca8344b2d2462",
+          "directory_permission": "0777",
+          "file_permission": "0777",
+          "filename": "./out/routing.yaml",
+          "id": "8531d43496244152ddecd7681e8ad68430748702",
+          "sensitive_content": null,
+          "source": null
+        },
+        "before_sensitive": {
+          "sensitive_content": true
+        },
+        "replace_paths": [
+          [
+            "content"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "name": "routing",
+      "provider_name": "registry.terraform.io/hashicorp/local",
+      "type": "local_file"
+    },
+    {
+      "action_reason": "replace_because_cannot_update",
+      "address": "random_password.webhook_secret",
+      "change": {
+        "actions": [
+          "delete",
+          "create"
+        ],
+        "after": {
+          "keepers": {
+            "rotation": "2026-q4"
+          },
+          "length": 32,
+          "lower": true,
+          "min_lower": 0,
+          "min_numeric": 0,
+          "min_special": 0,
+          "min_upper": 0,
+          "number": true,
+          "numeric": true,
+          "override_special": null,
+          "special": false,
+          "upper": true
+        },
+        "after_sensitive": {
+          "bcrypt_hash": true,
+          "keepers": {},
+          "result": true
+        },
+        "after_unknown": {
+          "bcrypt_hash": true,
+          "id": true,
+          "keepers": {},
+          "result": true
+        },
+        "before": {
+          "bcrypt_hash": "$2a$10$C2ljwRHgElMvYeHN3Sjm9e9o1z2t9laMVVb4.y.whkTfA6wp1gaki",
+          "id": "none",
+          "keepers": {
+            "rotation": "2026-q3"
+          },
+          "length": 32,
+          "lower": true,
+          "min_lower": 0,
+          "min_numeric": 0,
+          "min_special": 0,
+          "min_upper": 0,
+          "number": true,
+          "numeric": true,
+          "override_special": null,
+          "result": "6416Sj1v6Sy63rJ5Qs1r5TQHO1OUHfpg",
+          "special": false,
+          "upper": true
+        },
+        "before_sensitive": {
+          "bcrypt_hash": true,
+          "keepers": {},
+          "result": true
+        },
+        "replace_paths": [
+          [
+            "keepers"
+          ]
+        ]
+      },
+      "mode": "managed",
+      "name": "webhook_secret",
+      "provider_name": "registry.terraform.io/hashicorp/random",
+      "type": "random_password"
+    },
+    {
+      "address": "terraform_data.release",
+      "change": {
+        "actions": [
+          "update"
+        ],
+        "after": {
+          "id": "84e12fde-d262-e700-4788-6065fd950f0a",
+          "input": "v42",
+          "store": null,
+          "triggers_replace": null
+        },
+        "after_sensitive": {},
+        "after_unknown": {
+          "output": true
+        },
+        "before": {
+          "id": "84e12fde-d262-e700-4788-6065fd950f0a",
+          "input": "v41",
+          "output": "v41",
+          "store": null,
+          "triggers_replace": null
+        },
+        "before_sensitive": {}
+      },
+      "mode": "managed",
+      "name": "release",
+      "provider_name": "terraform.io/builtin/terraform",
+      "type": "terraform_data"
+    }
+  ],
+  "resource_drift": [
+    {
+      "address": "local_file.feature_flags",
+      "change": {
+        "actions": [
+          "delete"
+        ],
+        "after": null,
+        "after_sensitive": false,
+        "after_unknown": {},
+        "before": {
+          "content": "{\"instant_payouts\":false}",
+          "content_base64": null,
+          "content_base64sha256": "BDBne95DS4Z8oKiZNPTjeSOy9NmoBxyfIbiHeKwG9mw=",
+          "content_base64sha512": "BfbYTOUtVRfTRemiTRuXjnTkQiSENeAeMUc5e6Bq4/E8LhVMKCMntJgfduIg7QtmjHr2G8NeXKYQUKPkasQW8g==",
+          "content_md5": "243a2d80442ddc92f9c522d1d390aabd",
+          "content_sha1": "f8b91b32957bd364e1f0fa8c1a71ea123cd5c688",
+          "content_sha256": "0430677bde434b867ca0a89934f4e37923b2f4d9a8071c9f21b88778ac06f66c",
+          "content_sha512": "05f6d84ce52d5517d345e9a24d1b978e74e442248435e01e3147397ba06ae3f13c2e154c282327b4981f76e220ed0b668c7af61bc35e5ca61050a3e46ac416f2",
+          "directory_permission": "0777",
+          "file_permission": "0777",
+          "filename": "./out/feature-flags.json",
+          "id": "f8b91b32957bd364e1f0fa8c1a71ea123cd5c688",
+          "sensitive_content": null,
+          "source": null
+        },
+        "before_sensitive": {
+          "sensitive_content": true
+        }
+      },
+      "mode": "managed",
+      "name": "feature_flags",
+      "provider_name": "registry.terraform.io/hashicorp/local",
+      "type": "local_file"
+    }
+  ],
+  "terraform_version": "1.16.5",
+  "timestamp": "2026-10-10T19:05:54Z"
+}

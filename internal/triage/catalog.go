@@ -41,13 +41,13 @@ const (
 // StatefulTypes is the built-in table, keyed by resource type.
 var StatefulTypes = map[string]Stateful{
 	// AWS
-	"aws_db_instance":                   st("database", lossRows, "deletion_protection"),
-	"aws_rds_cluster":                   st("database", lossRows, "deletion_protection"),
+	"aws_db_instance":                   st("database", lossRows, "deletion_protection", "skip_final_snapshot", "delete_automated_backups"),
+	"aws_rds_cluster":                   st("database", lossRows, "deletion_protection", "skip_final_snapshot"),
 	"aws_rds_global_cluster":            st("database", lossRows, "deletion_protection"),
-	"aws_docdb_cluster":                 st("database", lossRows, "deletion_protection"),
-	"aws_neptune_cluster":               st("database", lossRows, "deletion_protection"),
+	"aws_docdb_cluster":                 st("database", lossRows, "deletion_protection", "skip_final_snapshot"),
+	"aws_neptune_cluster":               st("database", lossRows, "deletion_protection", "skip_final_snapshot"),
 	"aws_dynamodb_table":                st("database", "all items (point-in-time backups go with the table)", "deletion_protection_enabled"),
-	"aws_redshift_cluster":              st("warehouse", lossRows, ""),
+	"aws_redshift_cluster":              st("warehouse", lossRows, "", "skip_final_snapshot"),
 	"aws_elasticache_replication_group": st("cache", "the cached data set", ""),
 	"aws_elasticache_cluster":           st("cache", "the cached data set", ""),
 	"aws_memorydb_cluster":              st("database", lossRows, ""),
@@ -108,6 +108,16 @@ var StatefulTypes = map[string]Stateful{
 	"azurerm_eventhub_namespace":         st("stream", "events still in retention", ""),
 	"azurerm_recovery_services_vault":    st("backup", "recovery points", ""),
 	"azurerm_public_ip":                  st("address", lossIP, ""),
+}
+
+// amplifierNotes explain why an amplifier attribute set to true makes a
+// destroy worse.
+var amplifierNotes = map[string]string{
+	"force_destroy":              "the provider empties it first, so a non-empty %s is deleted without an error",
+	"force_delete":               "the provider deletes it even when it still holds data",
+	"delete_contents_on_destroy": "every table in the %s is deleted with it",
+	"skip_final_snapshot":        "no final snapshot is taken before the %s is deleted",
+	"delete_automated_backups":   "automated backups are deleted with the %s (the provider default)",
 }
 
 // PrivilegedAWSPolicies are managed policies that grant (near) admin.

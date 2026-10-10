@@ -60,7 +60,7 @@
         "title": "Deletes bucket: all objects",
         "details": [
           "The resource block was removed from the configuration.",
-          "`force_destroy = true`: the provider deletes the contents too, without asking."
+          "`force_destroy = true`: the provider empties it first, so a non-empty bucket is deleted without an error."
         ]
       },
       {

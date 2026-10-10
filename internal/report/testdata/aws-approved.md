@@ -23,7 +23,7 @@
 **`aws_s3_bucket.scratch`** (critical, destroy-stateful, approved by `approved-destroy`)
 - Deletes bucket: all objects
 - The resource block was removed from the configuration.
-- `force_destroy = true`: the provider deletes the contents too, without asking.
+- `force_destroy = true`: the provider empties it first, so a non-empty bucket is deleted without an error.
 
 **`aws_s3_bucket.statements`** (critical, destroy-stateful, approved by `approved-destroy`)
 - Replaces bucket (forced by `bucket`): all objects
@@ -34,6 +34,8 @@
 - Replaces database (forced by `storage_encrypted`): all data and automated backups
 - `storage_encrypted`: false → true
 - The old object is destroyed before the new one exists.
+- `skip_final_snapshot = true`: no final snapshot is taken before the database is deleted.
+- `delete_automated_backups = true`: automated backups are deleted with the database (the provider default).
 - `deletion_protection` is off, so the provider will not stop it.
 
 **`module.ledger_db.aws_kms_key.legacy`** (critical, destroy-stateful, approved by `approved-destroy`)

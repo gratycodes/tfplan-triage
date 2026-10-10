@@ -80,7 +80,14 @@ func (a *analyzer) lifecycle(rc *plan.ResourceChange) []Finding {
 		}
 		for _, amp := range s.Amplifiers {
 			if on, _ := plan.Bool(before, amp); on {
-				d = append(d, fmt.Sprintf("`%s = true`: the provider deletes the contents too, without asking.", amp))
+				note, ok := amplifierNotes[amp]
+				if !ok {
+					note = "this makes the delete harder to undo"
+				}
+				if strings.Contains(note, "%s") {
+					note = fmt.Sprintf(note, s.Kind)
+				}
+				d = append(d, fmt.Sprintf("`%s = true`: %s.", amp, note))
 			}
 		}
 		switch {

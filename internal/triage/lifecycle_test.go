@@ -10,7 +10,7 @@ func TestDeleteStatefulIsCritical(t *testing.T) {
 	if f.Severity != Critical {
 		t.Fatalf("severity %s", f.Severity)
 	}
-	if !hasDetail(f, "force_destroy = true") || !hasDetail(f, "removed from the configuration") {
+	if !hasDetail(f, "`force_destroy = true`: the provider empties it first, so a non-empty bucket is deleted") || !hasDetail(f, "removed from the configuration") {
 		t.Fatalf("details: %v", f.Details)
 	}
 }
@@ -42,6 +42,17 @@ func TestReplaceWithProtectionOnWarnsApplyWillFail(t *testing.T) {
 	}
 	// The protection flip is part of the destroy finding, not a second one.
 	none(t, Analyze(p, Options{}), RuleProtectionRemoved)
+}
+
+func TestDatabaseBackupAmplifiers(t *testing.T) {
+	p := change(t, "aws_db_instance", `["delete"]`,
+		`{"identifier":"db","skip_final_snapshot":true,"delete_automated_backups":true,"deletion_protection":false}`, `null`)
+	f := one(t, Analyze(p, Options{}), RuleDestroyStateful)
+	for _, want := range []string{"no final snapshot is taken before the database", "automated backups are deleted with the database"} {
+		if !hasDetail(f, want) {
+			t.Errorf("missing %q in %v", want, f.Details)
+		}
+	}
 }
 
 func TestCreateBeforeDestroyStillLosesData(t *testing.T) {

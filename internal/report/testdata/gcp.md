@@ -36,7 +36,7 @@
 **`google_storage_bucket.exports`** (critical, destroy-stateful)
 - Deletes bucket: all objects
 - The resource block was removed from the configuration.
-- `force_destroy = true`: the provider deletes the contents too, without asking.
+- `force_destroy = true`: the provider empties it first, so a non-empty bucket is deleted without an error.
 
 **`google_storage_bucket_iam_member.reports_partner`** (critical, iam-widening)
 - Grants access: `roles/storage.objectViewer` granted to `allUsers` (public) via google_storage_bucket_iam_member

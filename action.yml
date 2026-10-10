@@ -1,0 +1,83 @@
+name: tfplan-triage
+description: Explain a Terraform/OpenTofu plan in one PR comment, ranked by blast radius, and gate risky changes on approval labels.
+author: Gratus Antin
+branding:
+  icon: alert-triangle
+  color: orange
+
+inputs:
+  plan-json:
+    description: Path to `terraform show -json plan.out` output.
+    required: true
+  tf-dir:
+    description: Root module directory. When set, lifecycle.prevent_destroy is read from the source (it is not in plan JSON).
+    required: false
+    default: ""
+  config:
+    description: Policy file. Defaults to .tfplan-triage.yml in the working directory when present.
+    required: false
+    default: ""
+  fail-on:
+    description: Fail on unapproved findings at this severity or above (info, low, medium, high, critical, none). Overrides the config file.
+    required: false
+    default: ""
+  labels:
+    description: Comma-separated labels to match approvals against. Defaults to the PR's current labels.
+    required: false
+    default: ""
+  title:
+    description: Name for this plan, e.g. prod. Each title gets its own comment.
+    required: false
+    default: ""
+  comment:
+    description: Create or update one PR comment (needs pull-requests write).
+    required: false
+    default: "true"
+  github-token:
+    description: Token used to read labels and post the comment.
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  critical:
+    description: Number of critical findings.
+    value: ${{ steps.run.outputs.critical }}
+  high:
+    description: Number of high findings.
+    value: ${{ steps.run.outputs.high }}
+  blocked:
+    description: "true when unapproved findings reached fail-on."
+    value: ${{ steps.run.outputs.blocked }}
+  missing-labels:
+    description: Labels that would approve the blocking findings, comma-separated.
+    value: ${{ steps.run.outputs.missing-labels }}
+  report-json:
+    description: Path to the JSON report.
+    value: ${{ steps.run.outputs.report-json }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-go@v6
+      with:
+        go-version-file: ${{ github.action_path }}/go.mod
+        cache-dependency-path: ${{ github.action_path }}/go.sum
+    - name: Build tfplan-triage
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: go build -trimpath -o "$RUNNER_TEMP/tfplan-triage" ./cmd/tfplan-triage
+    - name: Triage plan
+      id: run
+      shell: bash
+      # Inputs go through env, never interpolated into the script.
+      env:
+        TPT_BIN: ${{ runner.temp }}/tfplan-triage
+        TPT_PLAN: ${{ inputs.plan-json }}
+        TPT_TF_DIR: ${{ inputs.tf-dir }}
+        TPT_CONFIG: ${{ inputs.config }}
+        TPT_FAIL_ON: ${{ inputs.fail-on }}
+        TPT_LABELS: ${{ inputs.labels }}
+        TPT_TITLE: ${{ inputs.title }}
+        TPT_COMMENT: ${{ inputs.comment }}
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: bash "$GITHUB_ACTION_PATH/scripts/action-run.sh"

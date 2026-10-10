@@ -16,7 +16,7 @@ mkdir -p "$TF_PLUGIN_CACHE_DIR"
 # loudly instead of silently depending on the network.
 offline() { HTTPS_PROXY=http://127.0.0.1:9 HTTP_PROXY=http://127.0.0.1:9 NO_PROXY=127.0.0.1,localhost "$@"; }
 here=$(cd "$(dirname "$0")" && pwd)
-out="$here/../plans"
+out="${OUT:-$here/../plans}"
 mkdir -p "$out"
 
 cloud() {

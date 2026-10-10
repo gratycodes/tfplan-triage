@@ -1,0 +1,36 @@
+# Example policy for tfplan-triage. Copy to .tfplan-triage.yml at the root
+# of your Terraform repo (or pass --config / the `config` input).
+
+# Fail the check on unapproved findings at this level or above.
+fail_on: high
+
+# A reviewer approves risky changes by adding a label to the PR. Each
+# finding at or above fail_on needs a label whose rules cover it.
+approvals:
+  - label: approved-destroy
+    rules: [destroy-stateful, protection-removed]
+  - label: approved-security
+    rules: [iam-widening, network-exposure]
+    min_severity: high
+
+# Sandboxes can be torn down freely.
+ignore:
+  - address: module.sandbox.*
+    rules: [destroy-stateful, unguarded-stateful]
+    reason: ephemeral test environment
+
+# Add types the built-in table lacks (your own providers, newer services)
+# or override a built-in entry.
+stateful_types:
+  aws_neptune_cluster_instance:
+    kind: database
+    loss: the instance's local storage and in-flight transactions
+  aws_neptune_cluster:
+    kind: database
+    loss: all graph data and automated backups
+    guard_attr: deletion_protection
+
+# Ports that are critical when open to the internet, on top of the
+# built-in list (SSH, RDP, databases, caches, brokers).
+sensitive_ports:
+  8443: internal admin UI

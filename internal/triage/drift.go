@@ -33,8 +33,8 @@ func (a *analyzer) drift(rc *plan.ResourceChange) []Finding {
 		}
 		var d []string
 		if stateful && s.GuardAttr != "" {
-			before, _ := guardState(s, rc.BeforeMap())
-			after, _ := guardState(s, rc.AfterMap())
+			before := guardState(s, rc.BeforeMap())
+			after := guardState(s, rc.AfterMap())
 			if before && !after {
 				sev = High
 				d = append(d, fmt.Sprintf("`%s` was turned off by hand.", s.GuardAttr))

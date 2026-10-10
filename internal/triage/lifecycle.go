@@ -29,27 +29,28 @@ var actionReasons = map[string]string{
 	"replace_by_triggers":               "A replace_triggered_by reference changed.",
 }
 
-func guardState(s Stateful, attrs map[string]any) (on, known bool) {
+// guardState reports whether the deletion-protection attribute is on.
+func guardState(s Stateful, attrs map[string]any) bool {
 	if s.GuardAttr == "" || attrs == nil {
-		return false, false
+		return false
 	}
 	v, ok := attrs[s.GuardAttr]
 	if !ok || v == nil {
-		return false, true
+		return false
 	}
 	want := s.GuardOn
 	if want == nil {
 		want = true
 	}
-	return fmt.Sprint(v) == fmt.Sprint(want), true
+	return fmt.Sprint(v) == fmt.Sprint(want)
 }
 
 func (a *analyzer) lifecycle(rc *plan.ResourceChange) []Finding {
 	s, stateful := a.stateful(rc.Type)
 	act := rc.Action()
 	before, after := rc.BeforeMap(), rc.AfterMap()
-	guardBefore, _ := guardState(s, before)
-	guardAfter, _ := guardState(s, after)
+	guardBefore := guardState(s, before)
+	guardAfter := guardState(s, after)
 
 	switch act {
 	case plan.Delete, plan.Replace:

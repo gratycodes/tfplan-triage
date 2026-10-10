@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: go vet
+        run: go vet ./...
+      - name: go test -race
+        run: go test -race -coverprofile=coverage.out ./...
+      - name: coverage summary
+        run: go tool cover -func=coverage.out | tail -1
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.14.0
+
+  fixtures:
+    # Regenerate every fixture plan with real Terraform and OpenTofu and
+    # the pinned providers, then check the findings still match the
+    # committed plans. Plans are not byte-stable (timestamps, random
+    # values), the findings are.
+    name: fixtures (Terraform + OpenTofu)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.16.5
+          terraform_wrapper: false
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: 1.13.1
+          tofu_wrapper: false
+      - name: regenerate plans
+        env:
+          OUT: ${{ runner.temp }}/plans
+        run: ./testdata/src/gen.sh
+      - name: compare findings
+        env:
+          OUT: ${{ runner.temp }}/plans
+        run: |
+          go build -o tfplan-triage ./cmd/tfplan-triage
+          status=0
+          for p in aws gcp azure local; do
+            ./tfplan-triage --format json testdata/plans/$p.json | jq -c '[.result.findings[] | [.severity, .rule, .address]]' > committed.json
+            ./tfplan-triage --format json "$OUT/$p.json" | jq -c '[.result.findings[] | [.severity, .rule, .address]]' > fresh.json
+            if diff -u committed.json fresh.json; then echo "$p: findings match"; else status=1; fi
+          done
+          exit $status
+
+  action:
+    name: action self-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: comment on this PR with the gated AWS fixture
+        id: live
+        uses: ./
+        # The fixture is meant to be risky; the asserts below check the gate.
+        continue-on-error: true
+        with:
+          plan-json: testdata/plans/aws.json
+          tf-dir: testdata/src/aws/head
+          config: examples/tfplan-triage.yml
+          title: aws-fixture
+          comment: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+      - name: gate fails without approval labels
+        id: blocked
+        uses: ./
+        continue-on-error: true
+        with:
+          plan-json: testdata/plans/aws.json
+          config: examples/tfplan-triage.yml
+          labels: unrelated-label
+          comment: "false"
+      - name: gate passes with approval labels
+        id: approved
+        uses: ./
+        with:
+          plan-json: testdata/plans/aws.json
+          config: examples/tfplan-triage.yml
+          labels: approved-destroy,approved-security
+          comment: "false"
+      - name: check outputs
+        env:
+          BLOCKED_OUTCOME: ${{ steps.blocked.outcome }}
+          BLOCKED: ${{ steps.blocked.outputs.blocked }}
+          MISSING: ${{ steps.blocked.outputs.missing-labels }}
+          CRITICAL: ${{ steps.approved.outputs.critical }}
+          HIGH: ${{ steps.approved.outputs.high }}
+          APPROVED: ${{ steps.approved.outputs.blocked }}
+        run: |
+          echo "blocked: outcome=$BLOCKED_OUTCOME blocked=$BLOCKED missing=$MISSING"
+          echo "approved: blocked=$APPROVED critical=$CRITICAL high=$HIGH"
+          test "$BLOCKED_OUTCOME" = failure
+          test "$BLOCKED" = true
+          test "$MISSING" = approved-destroy,approved-security
+          test "$APPROVED" = false
+          test "$CRITICAL" = 6
+          test "$HIGH" = 2

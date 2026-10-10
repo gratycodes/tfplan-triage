@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime/debug"
 	"strings"
 
 	"github.com/gratycodes/tfplan-triage/internal/config"
@@ -21,7 +22,19 @@ import (
 	"github.com/gratycodes/tfplan-triage/internal/triage"
 )
 
-var version = "dev"
+// version is set with -ldflags "-X main.version=..." for release builds.
+// For `go install ...@v0.1.0` it falls back to the module version.
+var version = ""
+
+func versionString() string {
+	if version != "" {
+		return version
+	}
+	if bi, ok := debug.ReadBuildInfo(); ok && bi.Main.Version != "" && bi.Main.Version != "(devel)" {
+		return bi.Main.Version
+	}
+	return "dev"
+}
 
 const usage = `usage: tfplan-triage [flags] PLAN_JSON
 
@@ -70,7 +83,7 @@ func run(args []string, stdout, stderr io.Writer) error {
 		return err
 	}
 	if *showVer {
-		fmt.Fprintln(stdout, version)
+		fmt.Fprintln(stdout, versionString())
 		return nil
 	}
 	if fs.NArg() != 1 {

@@ -134,7 +134,7 @@ To keep the approval meaningful, protect the label: only people who can approve 
 
 ## Sample comment
 
-This is the Action's comment on the synthetic AWS fixture with the example policy and one label applied (trimmed; the full comment is in [internal/report/testdata/aws-gated.md](internal/report/testdata/aws-gated.md), and the live one is on this repo's fixture PR).
+This is the Action's comment on the synthetic AWS fixture with the example policy and one label applied (trimmed; the full comment is in [internal/report/testdata/aws-gated.md](internal/report/testdata/aws-gated.md), and the live one is on [PR #1](https://github.com/gratycodes/tfplan-triage/pull/1#issuecomment-6101229194), updated in place after `approved-destroy` was added).
 
 > ### Terraform plan triage
 >

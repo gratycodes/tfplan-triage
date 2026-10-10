@@ -1,0 +1,197 @@
+{
+  "title": "prod",
+  "result": {
+    "terraform_version": "1.16.5",
+    "totals": {
+      "create": 4,
+      "update": 7,
+      "replace": 3,
+      "delete": 2
+    },
+    "drifted": 0,
+    "findings": [
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "aws_s3_bucket.scratch",
+        "module": "",
+        "type": "aws_s3_bucket",
+        "action": "delete",
+        "title": "Deletes bucket: all objects",
+        "details": [
+          "The resource block was removed from the configuration.",
+          "`force_destroy = true`: the provider deletes the contents too, without asking."
+        ],
+        "approved_by": "approved-destroy"
+      },
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "aws_s3_bucket.statements",
+        "module": "",
+        "type": "aws_s3_bucket",
+        "action": "replace",
+        "title": "Replaces bucket (forced by `bucket`): all objects",
+        "details": [
+          "`bucket`: \"acme-statements-prod\" → \"acme-statements-prod-eu\"",
+          "The old object is destroyed before the new one exists."
+        ],
+        "approved_by": "approved-destroy"
+      },
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "module.ledger_db.aws_db_instance.this",
+        "module": "module.ledger_db",
+        "type": "aws_db_instance",
+        "action": "replace",
+        "title": "Replaces database (forced by `storage_encrypted`): all data and automated backups",
+        "details": [
+          "`storage_encrypted`: false → true",
+          "The old object is destroyed before the new one exists.",
+          "`deletion_protection` is off, so the provider will not stop it."
+        ],
+        "approved_by": "approved-destroy"
+      },
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "module.ledger_db.aws_kms_key.legacy",
+        "module": "module.ledger_db",
+        "type": "aws_kms_key",
+        "action": "delete",
+        "title": "Deletes key: the key material; anything encrypted with it becomes unreadable",
+        "details": [
+          "The resource block was removed from the configuration."
+        ],
+        "approved_by": "approved-destroy"
+      },
+      {
+        "rule": "iam-widening",
+        "severity": "critical",
+        "address": "aws_iam_role_policy_attachment.ci_admin",
+        "module": "",
+        "type": "aws_iam_role_policy_attachment",
+        "action": "create",
+        "title": "Grants access: attaches AWS managed `AdministratorAccess`",
+        "approved_by": "approved-security"
+      },
+      {
+        "rule": "network-exposure",
+        "severity": "critical",
+        "address": "aws_vpc_security_group_ingress_rule.ssh_debug",
+        "module": "",
+        "type": "aws_vpc_security_group_ingress_rule",
+        "action": "create",
+        "title": "Exposes: port 22 (SSH) open to the internet (from `0.0.0.0/0`)",
+        "approved_by": "approved-security"
+      },
+      {
+        "rule": "iam-widening",
+        "severity": "high",
+        "address": "aws_iam_role_policy.ci_deployer",
+        "module": "",
+        "type": "aws_iam_role_policy",
+        "action": "update",
+        "title": "Widens access: can grant itself more access (`iam:PassRole` on `*`) (+1 more)",
+        "details": [
+          "every s3 action on every resource (`s3:*` on `*`)"
+        ],
+        "approved_by": "approved-security"
+      },
+      {
+        "rule": "network-exposure",
+        "severity": "high",
+        "address": "aws_s3_bucket_public_access_block.statements",
+        "module": "",
+        "type": "aws_s3_bucket_public_access_block",
+        "action": "replace",
+        "title": "Exposes: S3 Block Public Access `block_public_policy = false` (+1 more)",
+        "details": [
+          "S3 Block Public Access `restrict_public_buckets = false`"
+        ],
+        "approved_by": "approved-security"
+      },
+      {
+        "rule": "network-exposure",
+        "severity": "medium",
+        "address": "aws_vpc_security_group_ingress_rule.https_public",
+        "module": "",
+        "type": "aws_vpc_security_group_ingress_rule",
+        "action": "create",
+        "title": "Exposes: port 443 open to the internet (from `0.0.0.0/0`)"
+      },
+      {
+        "rule": "replace",
+        "severity": "low",
+        "address": "aws_s3_bucket_public_access_block.statements",
+        "module": "",
+        "type": "aws_s3_bucket_public_access_block",
+        "action": "replace",
+        "title": "Replaces aws_s3_bucket_public_access_block (forced by `bucket`)",
+        "details": [
+          "`bucket`: \"synthetic-aws-s3-bucket-statements\" → (known after apply)"
+        ]
+      }
+    ],
+    "modules": [
+      {
+        "module": "",
+        "counts": {
+          "create": 4,
+          "update": 7,
+          "replace": 2,
+          "delete": 1
+        },
+        "findings": 8,
+        "highest": "critical"
+      },
+      {
+        "module": "module.ledger_db",
+        "counts": {
+          "create": 0,
+          "update": 0,
+          "replace": 1,
+          "delete": 1
+        },
+        "findings": 2,
+        "highest": "critical"
+      }
+    ],
+    "noise": [
+      {
+        "reason": "tags only",
+        "addresses": [
+          "aws_cloudwatch_log_group.service[\"api\"]",
+          "aws_cloudwatch_log_group.service[\"ledger\"]",
+          "aws_cloudwatch_log_group.service[\"payouts\"]",
+          "aws_cloudwatch_log_group.service[\"refunds\"]",
+          "aws_cloudwatch_log_group.service[\"webhooks\"]",
+          "aws_cloudwatch_log_group.service[\"worker\"]"
+        ]
+      }
+    ],
+    "unflagged": [
+      {
+        "address": "aws_sqs_queue.refund_events",
+        "action": "create"
+      }
+    ],
+    "ignored": 0,
+    "errored": false
+  },
+  "gate": {
+    "fail_on": "high",
+    "labels": [
+      "approved-destroy",
+      "approved-security"
+    ],
+    "blocked": false,
+    "blocking": 0,
+    "approved": 8,
+    "approved_labels": [
+      "approved-destroy",
+      "approved-security"
+    ]
+  }
+}

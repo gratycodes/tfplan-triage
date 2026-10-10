@@ -1,0 +1,80 @@
+{
+  "result": {
+    "terraform_version": "1.16.5",
+    "totals": {
+      "create": 1,
+      "update": 1,
+      "replace": 2,
+      "delete": 0
+    },
+    "drifted": 1,
+    "findings": [
+      {
+        "rule": "drift",
+        "severity": "medium",
+        "address": "local_file.feature_flags",
+        "module": "",
+        "type": "local_file",
+        "action": "delete",
+        "title": "Deleted outside Terraform",
+        "details": [
+          "If the configuration still declares it, this plan recreates it."
+        ]
+      },
+      {
+        "rule": "replace",
+        "severity": "low",
+        "address": "local_file.routing",
+        "module": "",
+        "type": "local_file",
+        "action": "replace",
+        "title": "Replaces local_file (forced by `content`)",
+        "details": [
+          "`content`: \"primary: eu-west-1\\n\" → \"primary: eu-central-1\\n\""
+        ]
+      },
+      {
+        "rule": "replace",
+        "severity": "low",
+        "address": "random_password.webhook_secret",
+        "module": "",
+        "type": "random_password",
+        "action": "replace",
+        "title": "Replaces random_password (forced by `keepers`)"
+      }
+    ],
+    "modules": [
+      {
+        "module": "",
+        "counts": {
+          "create": 1,
+          "update": 1,
+          "replace": 2,
+          "delete": 0
+        },
+        "findings": 3,
+        "highest": "medium"
+      }
+    ],
+    "noise": null,
+    "unflagged": [
+      {
+        "address": "local_file.feature_flags",
+        "action": "create"
+      },
+      {
+        "address": "terraform_data.release",
+        "action": "update"
+      }
+    ],
+    "ignored": 0,
+    "errored": false
+  },
+  "gate": {
+    "fail_on": "none",
+    "labels": [],
+    "blocked": false,
+    "blocking": 0,
+    "approved": 0
+  }
+}

@@ -21,6 +21,8 @@ type Gate struct {
 	Approved int      `json:"approved"`
 	// MissingLabels lists labels that would unblock the check.
 	MissingLabels []string `json:"missing_labels,omitempty"`
+	// ApprovedLabels lists the PR labels that approved findings.
+	ApprovedLabels []string `json:"approved_labels,omitempty"`
 }
 
 func (ap Approval) covers(f Finding) bool {
@@ -50,7 +52,7 @@ func ApplyGate(res *Result, failOn Severity, failOnName string, approvals []Appr
 		have[l] = true
 	}
 	g := Gate{FailOn: failOnName, Labels: append([]string{}, labels...)}
-	missing := map[string]bool{}
+	missing, approvedBy := map[string]bool{}, map[string]bool{}
 	for i := range res.Findings {
 		f := &res.Findings[i]
 		f.Blocking, f.NeedsLabel, f.ApprovedBy = false, "", ""
@@ -72,6 +74,7 @@ func ApplyGate(res *Result, failOn Severity, failOnName string, approvals []Appr
 		}
 		if f.ApprovedBy != "" {
 			g.Approved++
+			approvedBy[f.ApprovedBy] = true
 			continue
 		}
 		f.Blocking = true
@@ -86,5 +89,9 @@ func ApplyGate(res *Result, failOn Severity, failOnName string, approvals []Appr
 		g.MissingLabels = append(g.MissingLabels, l)
 	}
 	sort.Strings(g.MissingLabels)
+	for l := range approvedBy {
+		g.ApprovedLabels = append(g.ApprovedLabels, l)
+	}
+	sort.Strings(g.ApprovedLabels)
 	return g
 }

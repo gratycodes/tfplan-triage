@@ -1,0 +1,137 @@
+{
+  "result": {
+    "terraform_version": "1.13.1",
+    "totals": {
+      "create": 4,
+      "update": 3,
+      "replace": 2,
+      "delete": 2
+    },
+    "drifted": 0,
+    "findings": [
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "google_compute_disk.cache",
+        "module": "",
+        "type": "google_compute_disk",
+        "action": "replace",
+        "title": "Replaces disk (forced by `type`): the volume contents",
+        "details": [
+          "`type`: \"pd-standard\" → \"pd-ssd\"",
+          "The old object is destroyed before the new one exists.",
+          "`lifecycle { prevent_destroy = true }` is not set in the source."
+        ]
+      },
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "google_kms_crypto_key.card_vault",
+        "module": "",
+        "type": "google_kms_crypto_key",
+        "action": "delete",
+        "title": "Deletes key: the key material; anything encrypted with it becomes unreadable",
+        "details": [
+          "The resource block was removed from the configuration."
+        ]
+      },
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "google_sql_database_instance.ledger",
+        "module": "",
+        "type": "google_sql_database_instance",
+        "action": "replace",
+        "title": "Replaces database (forced by `region`): all data and automated backups",
+        "details": [
+          "`region`: \"europe-west1\" → \"europe-west2\"",
+          "The old object is destroyed before the new one exists.",
+          "`deletion_protection` is on in the current state. This change also turns it off, but the delete uses the current setting, so expect this apply to fail at the delete step; the next apply after it would go through.",
+          "`lifecycle { prevent_destroy = true }` is not set in the source."
+        ]
+      },
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "google_storage_bucket.exports",
+        "module": "",
+        "type": "google_storage_bucket",
+        "action": "delete",
+        "title": "Deletes bucket: all objects",
+        "details": [
+          "The resource block was removed from the configuration.",
+          "`force_destroy = true`: the provider deletes the contents too, without asking."
+        ]
+      },
+      {
+        "rule": "iam-widening",
+        "severity": "critical",
+        "address": "google_storage_bucket_iam_member.reports_partner",
+        "module": "",
+        "type": "google_storage_bucket_iam_member",
+        "action": "create",
+        "title": "Grants access: `roles/storage.objectViewer` granted to `allUsers` (public) via google_storage_bucket_iam_member"
+      },
+      {
+        "rule": "network-exposure",
+        "severity": "critical",
+        "address": "google_compute_firewall.ssh_iap_debug",
+        "module": "",
+        "type": "google_compute_firewall",
+        "action": "create",
+        "title": "Exposes: port 22 (SSH) open to the internet (from `0.0.0.0/0`)"
+      },
+      {
+        "rule": "iam-widening",
+        "severity": "high",
+        "address": "google_project_iam_member.ci_owner",
+        "module": "",
+        "type": "google_project_iam_member",
+        "action": "create",
+        "title": "Grants access: `roles/owner` granted to `serviceAccount:ci-deployer@acme-payments-prod.iam.gserviceaccount.com`"
+      },
+      {
+        "rule": "network-exposure",
+        "severity": "medium",
+        "address": "google_compute_address.partner_sftp",
+        "module": "",
+        "type": "google_compute_address",
+        "action": "create",
+        "title": "Exposes: reserves an external IP address"
+      }
+    ],
+    "modules": [
+      {
+        "module": "",
+        "counts": {
+          "create": 4,
+          "update": 3,
+          "replace": 2,
+          "delete": 2
+        },
+        "findings": 8,
+        "highest": "critical"
+      }
+    ],
+    "noise": [
+      {
+        "reason": "labels only",
+        "addresses": [
+          "google_pubsub_topic.events[\"chargebacks\"]",
+          "google_pubsub_topic.events[\"refunds\"]",
+          "google_pubsub_topic.events[\"settlements\"]"
+        ]
+      }
+    ],
+    "unflagged": null,
+    "ignored": 0,
+    "errored": false
+  },
+  "gate": {
+    "fail_on": "none",
+    "labels": [],
+    "blocked": false,
+    "blocking": 0,
+    "approved": 0
+  }
+}

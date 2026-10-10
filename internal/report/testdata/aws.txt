@@ -1,0 +1,37 @@
+6 critical, 2 high, 1 medium · 16 changes (+4 ~7 -/+3 -2)
+
+CRITICAL aws_s3_bucket.scratch
+         Deletes bucket: all objects
+         - The resource block was removed from the configuration.
+         - force_destroy = true: the provider deletes the contents too, without asking.
+CRITICAL aws_s3_bucket.statements
+         Replaces bucket (forced by bucket): all objects
+         - bucket: "acme-statements-prod" → "acme-statements-prod-eu"
+         - The old object is destroyed before the new one exists.
+         - lifecycle { prevent_destroy = true } is not set in the source.
+CRITICAL module.ledger_db.aws_db_instance.this
+         Replaces database (forced by storage_encrypted): all data and automated backups
+         - storage_encrypted: false → true
+         - The old object is destroyed before the new one exists.
+         - deletion_protection is off, so the provider will not stop it.
+         - lifecycle { prevent_destroy = true } is not set in the source.
+CRITICAL module.ledger_db.aws_kms_key.legacy
+         Deletes key: the key material; anything encrypted with it becomes unreadable
+         - The resource block was removed from the configuration.
+CRITICAL aws_iam_role_policy_attachment.ci_admin
+         Grants access: attaches AWS managed AdministratorAccess
+CRITICAL aws_vpc_security_group_ingress_rule.ssh_debug
+         Exposes: port 22 (SSH) open to the internet (from 0.0.0.0/0)
+HIGH     aws_iam_role_policy.ci_deployer
+         Widens access: can grant itself more access (iam:PassRole on *) (+1 more)
+         - every s3 action on every resource (s3:* on *)
+HIGH     aws_s3_bucket_public_access_block.statements
+         Exposes: S3 Block Public Access block_public_policy = false (+1 more)
+         - S3 Block Public Access restrict_public_buckets = false
+MEDIUM   aws_vpc_security_group_ingress_rule.https_public
+         Exposes: port 443 open to the internet (from 0.0.0.0/0)
+LOW      aws_s3_bucket_public_access_block.statements
+         Replaces aws_s3_bucket_public_access_block (forced by bucket)
+         - bucket: "synthetic-aws-s3-bucket-statements" → (known after apply)
+
+updates to tags only: 6 resources

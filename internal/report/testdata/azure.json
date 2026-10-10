@@ -1,0 +1,99 @@
+{
+  "result": {
+    "terraform_version": "1.16.5",
+    "totals": {
+      "create": 3,
+      "update": 1,
+      "replace": 1,
+      "delete": 1
+    },
+    "drifted": 0,
+    "findings": [
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "azurerm_key_vault.app",
+        "module": "",
+        "type": "azurerm_key_vault",
+        "action": "delete",
+        "title": "Deletes key: all keys, secrets and certificates in the vault",
+        "details": [
+          "The resource block was removed from the configuration.",
+          "`purge_protection_enabled` is off, so the provider will not stop it."
+        ]
+      },
+      {
+        "rule": "destroy-stateful",
+        "severity": "critical",
+        "address": "azurerm_storage_account.ledger",
+        "module": "",
+        "type": "azurerm_storage_account",
+        "action": "replace",
+        "title": "Replaces storage account (forced by `name`): all blobs, files, queues and tables in the account",
+        "details": [
+          "`name`: \"acmeledgerprod\" → \"stacmeledgerweu\"",
+          "The old object is destroyed before the new one exists.",
+          "`lifecycle { prevent_destroy = true }` is not set in the source."
+        ]
+      },
+      {
+        "rule": "iam-widening",
+        "severity": "critical",
+        "address": "azurerm_role_assignment.ci_uaa",
+        "module": "",
+        "type": "azurerm_role_assignment",
+        "action": "create",
+        "title": "Grants access: `User Access Administrator` at subscription or management-group scope (`/subscriptions/00000000-0000-0000-0000-000000000000`)"
+      },
+      {
+        "rule": "network-exposure",
+        "severity": "critical",
+        "address": "azurerm_network_security_rule.rdp",
+        "module": "",
+        "type": "azurerm_network_security_rule",
+        "action": "create",
+        "title": "Exposes: port 3389 (RDP) open to the internet (from `*`)"
+      },
+      {
+        "rule": "network-exposure",
+        "severity": "medium",
+        "address": "azurerm_public_ip.jump",
+        "module": "",
+        "type": "azurerm_public_ip",
+        "action": "create",
+        "title": "Exposes: allocates a public IP"
+      }
+    ],
+    "modules": [
+      {
+        "module": "",
+        "counts": {
+          "create": 3,
+          "update": 1,
+          "replace": 1,
+          "delete": 1
+        },
+        "findings": 5,
+        "highest": "critical"
+      }
+    ],
+    "noise": [
+      {
+        "reason": "tags only",
+        "addresses": [
+          "azurerm_network_security_group.api"
+        ]
+      }
+    ],
+    "unflagged": null,
+    "ignored": 0,
+    "errored": false
+  },
+  "gate": {
+    "fail_on": "none",
+    "labels": [],
+    "blocked": false,
+    "blocking": 0,
+    "approved": 0
+  }
+}

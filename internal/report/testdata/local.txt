@@ -1,0 +1,10 @@
+1 medium · 4 changes (+1 ~1 -/+2) · 1 drifted
+
+MEDIUM   local_file.feature_flags
+         Deleted outside Terraform
+         - If the configuration still declares it, this plan recreates it.
+LOW      local_file.routing
+         Replaces local_file (forced by content)
+         - content: "primary: eu-west-1\n" → "primary: eu-central-1\n"
+LOW      random_password.webhook_secret
+         Replaces random_password (forced by keepers)

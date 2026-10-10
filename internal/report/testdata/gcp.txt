@@ -1,0 +1,30 @@
+6 critical, 1 high, 1 medium · 11 changes (+4 ~3 -/+2 -2)
+
+CRITICAL google_compute_disk.cache
+         Replaces disk (forced by type): the volume contents
+         - type: "pd-standard" → "pd-ssd"
+         - The old object is destroyed before the new one exists.
+         - lifecycle { prevent_destroy = true } is not set in the source.
+CRITICAL google_kms_crypto_key.card_vault
+         Deletes key: the key material; anything encrypted with it becomes unreadable
+         - The resource block was removed from the configuration.
+CRITICAL google_sql_database_instance.ledger
+         Replaces database (forced by region): all data and automated backups
+         - region: "europe-west1" → "europe-west2"
+         - The old object is destroyed before the new one exists.
+         - deletion_protection is on in the current state. This change also turns it off, but the delete uses the current setting, so expect this apply to fail at the delete step; the next apply after it would go through.
+         - lifecycle { prevent_destroy = true } is not set in the source.
+CRITICAL google_storage_bucket.exports
+         Deletes bucket: all objects
+         - The resource block was removed from the configuration.
+         - force_destroy = true: the provider deletes the contents too, without asking.
+CRITICAL google_storage_bucket_iam_member.reports_partner
+         Grants access: roles/storage.objectViewer granted to allUsers (public) via google_storage_bucket_iam_member
+CRITICAL google_compute_firewall.ssh_iap_debug
+         Exposes: port 22 (SSH) open to the internet (from 0.0.0.0/0)
+HIGH     google_project_iam_member.ci_owner
+         Grants access: roles/owner granted to serviceAccount:ci-deployer@acme-payments-prod.iam.gserviceaccount.com
+MEDIUM   google_compute_address.partner_sftp
+         Exposes: reserves an external IP address
+
+updates to labels only: 3 resources

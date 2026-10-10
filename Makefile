@@ -10,9 +10,10 @@ test:
 lint:
 	golangci-lint run ./...
 
-# Rewrite report golden files; review the diff before committing.
+# Rewrite report golden files and docs/rules.md; review the diff before committing.
 golden:
 	go test ./internal/report -update
+	go test ./internal/triage -update
 
 # Regenerate testdata/plans with terraform and tofu (no cloud credentials).
 fixtures:

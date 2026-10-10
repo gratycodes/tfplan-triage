@@ -190,6 +190,7 @@ func Analyze(p *plan.Plan, opts Options) *Result {
 		var fs []Finding
 		fs = append(fs, a.lifecycle(rc)...)
 		fs = append(fs, a.iam(rc)...)
+		fs = append(fs, a.network(rc)...)
 		fs = a.filter(fs)
 		findings = append(findings, fs...)
 		if len(fs) > 0 {

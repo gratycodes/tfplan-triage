@@ -20,6 +20,26 @@ func TestStripInstanceKeys(t *testing.T) {
 	}
 }
 
+func TestIgnore(t *testing.T) {
+	p := planOf(t, `"resource_changes":[
+		{"address":"module.sandbox.aws_s3_bucket.a","module_address":"module.sandbox","mode":"managed","type":"aws_s3_bucket","change":{"actions":["delete"],"before":{},"after":null}},
+		{"address":"module.sandbox.aws_iam_role_policy_attachment.b","module_address":"module.sandbox","mode":"managed","type":"aws_iam_role_policy_attachment","change":{"actions":["create"],"before":null,"after":{"policy_arn":"arn:aws:iam::aws:policy/AdministratorAccess"}}},
+		{"address":"aws_s3_bucket.prod","mode":"managed","type":"aws_s3_bucket","change":{"actions":["delete"],"before":{},"after":null}}]`)
+	res := Analyze(p, Options{Ignore: []IgnoreRule{{Address: "module.sandbox.*", Rules: []string{RuleDestroyStateful}}}})
+	if res.Ignored != 1 || len(res.Findings) != 2 {
+		b, _ := json.Marshal(res.Findings)
+		t.Fatalf("ignored=%d findings=%s", res.Ignored, b)
+	}
+	res = Analyze(p, Options{Ignore: []IgnoreRule{{Address: "module.sandbox.*"}}})
+	if res.Ignored != 2 || len(res.Findings) != 1 || res.Findings[0].Address != "aws_s3_bucket.prod" {
+		t.Fatalf("ignore all rules: %+v", res.Findings)
+	}
+	res = Analyze(p, Options{Ignore: []IgnoreRule{{Address: `aws_s3_bucket.prod`}}})
+	if res.Ignored != 1 {
+		t.Fatal("exact address")
+	}
+}
+
 func TestMatchAddressBrackets(t *testing.T) {
 	if !matchAddress(`aws_s3_bucket.b[*]`, `aws_s3_bucket.b["x"]`) {
 		t.Error("bracket glob")

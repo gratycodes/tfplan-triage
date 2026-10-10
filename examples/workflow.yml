@@ -1,0 +1,38 @@
+# .github/workflows/terraform-plan.yml
+#
+# Plans on every PR, posts one triage comment, and fails the check on
+# unapproved high-risk changes. Re-runs when labels change, so adding
+# `approved-destroy` after review turns the check green without a new push.
+name: terraform plan
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    paths: ["infra/**"]
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write # for OIDC to your cloud
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v5
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      # ... configure cloud credentials here (OIDC recommended) ...
+      - run: terraform init -input=false
+      - run: terraform plan -input=false -lock=false -out=plan.out
+      - run: terraform show -json plan.out > plan.json
+      - uses: gratycodes/tfplan-triage@v0.1.0
+        with:
+          plan-json: infra/plan.json
+          tf-dir: infra
+          config: infra/.tfplan-triage.yml
+          title: prod

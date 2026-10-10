@@ -1,0 +1,6 @@
+/tfplan-triage
+/dist/
+coverage.out
+*.test
+.terraform/
+*.tfstate*
